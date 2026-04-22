@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F5F0E8; --bg2: #EDE8DE; --bg3: #E3DDD2;
+    --surface: #FAF7F2; --border: rgba(120,110,90,0.15); --border2: rgba(120,110,90,0.28);
+    --text: #2A2520; --text2: #6B6258; --text3: #9E9488;
+    --accent: #7B5EA7; --accent-light: #EDE8F5;
+    --green: #3D7A5F; --green-light: #E4F0EB;
+    --amber: #B5742A; --red: #B54040;
+    --serif: 'Lora', Georgia, serif; --sans: 'DM Sans', sans-serif;
+    --radius: 12px; --radius-sm: 8px;
+  }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── Auth screen ── */
+  #authScreen {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100vh; gap: 20px;
+  }
+  .auth-title { font-family: var(--serif); font-size: 32px; color: var(--text); }
+  .auth-sub { font-size: 14px; color: var(--text2); }
+  .btn-google {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 24px; border: 1px solid var(--border2);
+    border-radius: var(--radius-sm); background: var(--surface);
+    color: var(--text); font-family: var(--sans); font-size: 15px;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .btn-google:hover { background: var(--bg2); }
+  .btn-google svg { width: 20px; height: 20px; }
+  .auth-error { font-size: 13px; color: var(--red); }
+
+  /* ── App shell ── */
+  #app { display: none; }
+  .shell { max-width: 1100px; margin: 0 auto; padding: 36px 28px 60px; }
+
+  /* ── Header ── */
+  .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border2); }
+  .greeting { font-family: var(--serif); font-size: 36px; font-weight: 400; line-height: 1.2; }
+  .greeting em { font-style: italic; color: var(--accent); }
+  .header-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .date-display { font-size: 14px; color: var(--text2); font-weight: 300; }
+  .clock { font-family: var(--serif); font-size: 28px; font-weight: 400; }
+  .user-row { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+  .user-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+  .user-name { font-size: 13px; color: var(--text2); }
+  .btn-signout { font-size: 12px; color: var(--text3); background: none; border: none; cursor: pointer; text-decoration: underline; padding: 0; }
+  .btn-signout:hover { color: var(--text2); }
+
+  /* ── History bar ── */
+  .history-bar {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 18px;
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 24px; flex-wrap: wrap;
+  }
+  .history-label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-right: 4px; }
+  .day-chip {
+    padding: 5px 12px; border: 1px solid var(--border2); border-radius: 100px;
+    font-size: 12px; cursor: pointer; background: transparent; color: var(--text2);
+    font-family: var(--sans); transition: all 0.15s; white-space: nowrap;
+  }
+  .day-chip:hover { background: var(--bg2); }
+  .day-chip.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+  .viewing-banner {
+    background: var(--accent-light); border: 1px solid var(--accent);
+    border-radius: var(--radius-sm); padding: 8px 14px;
+    font-size: 13px; color: var(--accent); display: none;
+    align-items: center; gap: 10px; margin-bottom: 16px;
+  }
+  .viewing-banner button { background: none; border: none; color: var(--accent); cursor: pointer; font-size: 13px; text-decoration: underline; font-family: var(--sans); }
+
+  /* ── Weather ── */
+  .weather-bar {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 20px;
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 24px; font-size: 14px; color: var(--text2); flex-wrap: wrap;
+  }
+  .weather-icon { font-size: 24px; }
+  .weather-temp { font-family: var(--serif); font-size: 22px; color: var(--text); }
+  .weather-desc { flex: 1; }
+  .weather-detail { color: var(--text3); font-size: 13px; }
+
+  /* ── Main grid ── */
+  .main-grid { display: grid; grid-template-columns: minmax(0,1.5fr) minmax(0,1fr); gap: 20px; }
+  .col-left, .col-right { display: flex; flex-direction: column; gap: 20px; }
+
+  /* ── Cards ── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; transition: border-color 0.2s; }
+  .card:focus-within { border-color: var(--border2); }
+  .card-label { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 14px; }
+
+  /* ── Readonly overlay ── */
+  .readonly-mode textarea, .readonly-mode input, .readonly-mode button:not(.allow-in-readonly) { pointer-events: none; opacity: 0.7; }
+
+  /* ── Journal ── */
+  .journal-textarea {
+    width: 100%; min-height: 180px; resize: vertical;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 12px 14px; font-family: var(--serif); font-size: 15px;
+    line-height: 1.75; color: var(--text); background: var(--bg2); outline: none;
+    transition: border-color 0.2s;
+  }
+  .journal-textarea::placeholder { color: var(--text3); font-style: italic; }
+  .journal-textarea:focus { border-color: var(--border2); }
+  .save-indicator { font-size: 12px; color: var(--text3); margin-top: 8px; min-height: 18px; font-style: italic; }
+
+  /* ── Mood ── */
+  .mood-options { display: flex; gap: 8px; flex-wrap: wrap; }
+  .mood-btn {
+    padding: 7px 16px; border: 1px solid var(--border2); border-radius: 100px;
+    font-size: 13px; font-family: var(--sans); cursor: pointer;
+    background: transparent; color: var(--text2); transition: all 0.15s;
+  }
+  .mood-btn:hover { background: var(--bg2); }
+  .mood-btn.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+
+  /* ── Habits ── */
+  .habit-list { display: flex; flex-direction: column; gap: 2px; }
+  .habit-row { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
+  .habit-row:last-child { border-bottom: none; }
+  .habit-box { width: 20px; height: 20px; border: 1.5px solid var(--border2); border-radius: 5px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .habit-box.done { background: var(--green); border-color: var(--green); }
+  .habit-check-icon { display: none; color: white; font-size: 12px; font-weight: 600; }
+  .habit-box.done .habit-check-icon { display: block; }
+  .habit-name { font-size: 14px; flex: 1; }
+  .habit-name.done { text-decoration: line-through; color: var(--text3); }
+  .habit-add-row { display: flex; gap: 8px; margin-top: 12px; }
+  .habit-add-row input, .food-add-row input, .link-add-row input, .notes-area {
+    padding: 7px 11px; font-size: 13px; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); background: var(--bg2); color: var(--text);
+    font-family: var(--sans); outline: none;
+  }
+  .habit-add-row input { flex: 1; }
+  .habit-add-row input:focus, .food-add-row input:focus, .link-add-row input:focus, .notes-area:focus { border-color: var(--border2); }
+  .btn-ghost { padding: 7px 14px; font-size: 12px; border: 1px solid var(--border2); border-radius: var(--radius-sm); background: transparent; color: var(--text2); cursor: pointer; font-family: var(--sans); white-space: nowrap; transition: background 0.15s; }
+  .btn-ghost:hover { background: var(--bg2); }
+
+  /* ── Food ── */
+  .cal-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .cal-eaten { font-family: var(--serif); font-size: 24px; }
+  .cal-goal-lbl { font-size: 13px; color: var(--text3); }
+  .cal-goal-edit { border-bottom: 1px dashed var(--text3); cursor: pointer; }
+  .cal-bar-wrap { height: 6px; background: var(--bg3); border-radius: 3px; margin-bottom: 16px; overflow: hidden; }
+  .cal-bar-fill { height: 100%; border-radius: 3px; background: var(--green); transition: width 0.4s; }
+  .cal-bar-fill.over { background: var(--amber); }
+  .food-list { list-style: none; margin-bottom: 12px; }
+  .food-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; gap: 8px; }
+  .food-item:last-child { border-bottom: none; }
+  .food-name { flex: 1; }
+  .food-kcal { font-size: 13px; color: var(--text3); flex-shrink: 0; }
+  .food-del { color: var(--text3); cursor: pointer; font-size: 16px; background: none; border: none; transition: color 0.15s; }
+  .food-del:hover { color: var(--red); }
+  .food-empty { font-size: 13px; color: var(--text3); font-style: italic; padding: 8px 0; }
+  .food-add-row { display: flex; gap: 8px; }
+  .food-add-row .food-name-input { flex: 1; }
+  .food-add-row .food-cal-input { width: 72px; }
+  .btn-add { padding: 8px 14px; font-size: 13px; border: 1px solid var(--accent); border-radius: var(--radius-sm); background: var(--accent-light); color: var(--accent); cursor: pointer; font-family: var(--sans); font-weight: 500; white-space: nowrap; transition: background 0.15s; }
+  .btn-add:hover { background: #ddd5f0; }
+
+  /* ── Notes ── */
+  .notes-area { width: 100%; min-height: 100px; resize: vertical; font-size: 14px; line-height: 1.6; }
+
+  /* ── Links ── */
+  .links-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px,1fr)); gap: 8px; margin-bottom: 12px; }
+  .link-chip { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text2); font-size: 12px; text-align: center; transition: all 0.15s; cursor: pointer; position: relative; }
+  .link-chip:hover { background: var(--bg3); border-color: var(--border2); color: var(--text); }
+  .link-icon { font-size: 20px; }
+  .link-del { position: absolute; top: 3px; right: 5px; font-size: 13px; color: var(--text3); cursor: pointer; background: none; border: none; display: none; }
+  .link-chip:hover .link-del { display: block; }
+  .link-del:hover { color: var(--red); }
+  .link-add-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .link-add-row input { min-width: 70px; }
+  #linkLabel { max-width: 90px; }
+  #linkEmoji { max-width: 46px; }
+
+  /* ── Sync status ── */
+  .sync-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--text3); margin-right: 5px; transition: background 0.3s; }
+  .sync-dot.synced { background: var(--green); }
+  .sync-dot.syncing { background: var(--amber); }
+  .sync-status { font-size: 12px; color: var(--text3); margin-top: 8px; display: flex; align-items: center; }
+
+  @media (max-width: 720px) {
+    .shell { padding: 20px 16px 48px; }
+    .main-grid { grid-template-columns: 1fr; }
+    .greeting { font-size: 26px; }
+    .clock { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Auth screen ── -->
+<div id="authScreen">
+  <div class="auth-title">Good to see you.</div>
+  <div class="auth-sub">Sign in to access your dashboard from any device.</div>
+  <button class="btn-google" id="signInBtn">
+    <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+    Sign in with Google
+  </button>
+  <div class="auth-error" id="authError"></div>
+</div>
+
+<!-- ── App ── -->
+<div id="app">
+<div class="shell">
+
+  <div class="header">
+    <div>
+      <div class="greeting" id="greeting">Good <em>morning</em></div>
+    </div>
+    <div class="header-right">
+      <div class="date-display" id="dateDisplay"></div>
+      <div class="clock" id="clock"></div>
+      <div class="user-row">
+        <img class="user-avatar" id="userAvatar" src="" alt="" />
+        <span class="user-name" id="userName"></span>
+        <button class="btn-signout" onclick="signOut()">Sign out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- History bar -->
+  <div class="history-bar">
+    <span class="history-label">History</span>
+    <div id="historyChips" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+  </div>
+
+  <!-- Viewing past day banner -->
+  <div class="viewing-banner" id="viewingBanner">
+    Viewing <strong id="viewingDate"></strong> — read only
+    <button class="allow-in-readonly" onclick="goToToday()">Back to today</button>
+  </div>
+
+  <div class="weather-bar" id="weatherBar"><span style="color:var(--text3);font-style:italic;">Loading weather…</span></div>
+
+  <div class="main-grid" id="mainGrid">
+    <div class="col-left">
+
+      <div class="card">
+        <div class="card-label">Today's thoughts</div>
+        <textarea class="journal-textarea" id="journalText" placeholder="What's on your mind today?"></textarea>
+        <div class="sync-status"><span class="sync-dot" id="journalDot"></span><span id="journalStatus">—</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Food today</div>
+        <div class="cal-header">
+          <span class="cal-eaten"><span id="calEaten">0</span> <span style="font-size:14px;color:var(--text3);font-family:var(--sans);font-weight:300;">kcal</span></span>
+          <span class="cal-goal-lbl">Goal: <span id="calGoalDisplay" class="cal-goal-edit" onclick="editCalGoal()"></span></span>
+        </div>
+        <div class="cal-bar-wrap"><div class="cal-bar-fill" id="calBarFill"></div></div>
+        <ul class="food-list" id="foodList"></ul>
+        <div class="food-add-row">
+          <input class="food-name-input" type="text" id="foodNameInput" placeholder="Food name…" />
+          <input class="food-cal-input" type="number" id="foodCalInput" placeholder="kcal" min="0" />
+          <button class="btn-add" onclick="addFood()">Add</button>
+        </div>
+      </div>
+
+    </div>
+    <div class="col-right">
+
+      <div class="card">
+        <div class="card-label">How are you feeling?</div>
+        <div class="mood-options" id="moodOptions">
+          <button class="mood-btn" data-mood="rough" onclick="setMood('rough')">Rough</button>
+          <button class="mood-btn" data-mood="okay" onclick="setMood('okay')">Okay</button>
+          <button class="mood-btn" data-mood="good" onclick="setMood('good')">Good</button>
+          <button class="mood-btn" data-mood="great" onclick="setMood('great')">Great</button>
+          <button class="mood-btn" data-mood="energised" onclick="setMood('energised')">Energised</button>
+          <button class="mood-btn" data-mood="tired" onclick="setMood('tired')">Tired</button>
+          <button class="mood-btn" data-mood="anxious" onclick="setMood('anxious')">Anxious</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Habits</div>
+        <div class="habit-list" id="habitList"></div>
+        <div class="habit-add-row">
+          <input type="text" id="habitInput" placeholder="Add a habit…" onkeydown="if(event.key==='Enter')addHabit()" />
+          <button class="btn-ghost" onclick="addHabit()">Add</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Notes &amp; reminders</div>
+        <textarea class="notes-area" id="notesText" placeholder="Reminders, to-dos, quick thoughts…"></textarea>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Quick links</div>
+        <div class="links-grid" id="linksGrid"></div>
+        <div class="link-add-row">
+          <input type="text" id="linkLabel" placeholder="Label" />
+          <input type="text" id="linkUrl" placeholder="https://…" />
+          <input type="text" id="linkEmoji" placeholder="🔗" />
+          <button class="btn-ghost" onclick="addLink()">Add</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut as fbSignOut }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, onSnapshot }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🔧 PASTE YOUR FIREBASE CONFIG HERE
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const firebaseConfig = {
+  apiKey: "AIza...",
+  authDomain: "my-dashboard-xxx.firebaseapp.com",
+  projectId: "my-dashboard-xxx",
+  ...
+};
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+let currentUser = null;
+let viewingDay = null; // null = today
+let habitDefs = [];
+let calGoal = 2000;
+let links = [];
+let saveTimer = {};
+
+const todayKey = () => new Date().toISOString().slice(0,10);
+
+// ── Auth ──────────────────────────────────────────────────────────────────
+document.getElementById('signInBtn').addEventListener('click', async () => {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch(e) {
+    document.getElementById('authError').textContent = 'Sign-in failed. Make sure pop-ups are allowed.';
+  }
+});
+
+window.signOut = async () => {
+  await fbSignOut(auth);
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('authScreen').style.display = 'flex';
+  currentUser = null;
+};
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    currentUser = user;
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('userAvatar').src = user.photoURL || '';
+    document.getElementById('userName').textContent = user.displayName || user.email;
+    initApp();
+  } else {
+    document.getElementById('authScreen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+
+// ── Firestore helpers ─────────────────────────────────────────────────────
+const userDoc = (path) => doc(db, 'users', currentUser.uid, ...path.split('/'));
+
+async function fsGet(path, fallback) {
+  try {
+    const snap = await getDoc(userDoc(path));
+    return snap.exists() ? snap.data() : fallback;
+  } catch { return fallback; }
+}
+
+async function fsSet(path, data) {
+  try { await setDoc(userDoc(path), data, { merge: true }); } catch(e) { console.error(e); }
+}
+
+// ── Clock ─────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours(), mins = now.getMinutes().toString().padStart(2,'0');
+  const ampm = h >= 12 ? 'pm' : 'am', h12 = h % 12 || 12;
+  document.getElementById('clock').textContent = `${h12}:${mins} ${ampm}`;
+  const greet = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
+  document.getElementById('greeting').innerHTML = `Good <em>${greet}</em>`;
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('dateDisplay').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+}
+updateClock(); setInterval(updateClock, 10000);
+
+// ── Weather ───────────────────────────────────────────────────────────────
+const WX_ICONS = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',51:'🌦️',61:'🌧️',71:'🌨️',80:'🌦️',95:'⛈️'};
+const WX_DESC  = {0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',51:'Drizzle',61:'Rain',71:'Snow',80:'Showers',95:'Thunderstorm'};
+
+async function loadWeather() {
+  const bar = document.getElementById('weatherBar');
+  try {
+    const pos = await new Promise((res,rej) => navigator.geolocation.getCurrentPosition(res,rej,{timeout:6000}));
+    const {latitude:lat, longitude:lon} = pos.coords;
+    const data = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=celsius&windspeed_unit=mph&timezone=auto`).then(r=>r.json());
+    const cw = data.current_weather, code = cw.weathercode;
+    const icon = WX_ICONS[code] || '🌡️', desc = WX_DESC[code] || '';
+    const tempC = Math.round(cw.temperature), tempF = Math.round(tempC*9/5+32), wind = Math.round(cw.windspeed);
+    bar.innerHTML = `<span style="font-size:24px;">${icon}</span><span style="font-family:var(--serif);font-size:22px;color:var(--text);">${tempC}°C / ${tempF}°F</span><span style="flex:1;">${desc}</span><span style="font-size:13px;color:var(--text3);">Wind ${wind} mph</span>`;
+  } catch {
+    bar.innerHTML = `<span style="color:var(--text3);font-style:italic;">Weather unavailable — allow location to see forecast.</span>`;
+  }
+}
+
+// ── History ───────────────────────────────────────────────────────────────
+async function loadHistory() {
+  try {
+    const snap = await getDocs(collection(db, 'users', currentUser.uid, 'days'));
+    const dates = snap.docs.map(d => d.id).sort().reverse().slice(0, 14);
+    const today = todayKey();
+    const chips = document.getElementById('historyChips');
+    chips.innerHTML = '';
+    const allDates = dates.includes(today) ? dates : [today, ...dates];
+    allDates.forEach(date => {
+      const btn = document.createElement('button');
+      btn.className = 'day-chip' + (date === (viewingDay || today) ? ' active' : '');
+      btn.textContent = date === today ? 'Today' : formatDate(date);
+      btn.onclick = () => switchDay(date);
+      chips.appendChild(btn);
+    });
+  } catch(e) { console.error(e); }
+}
+
+function formatDate(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
+async function switchDay(date) {
+  const today = todayKey();
+  viewingDay = date === today ? null : date;
+  const banner = document.getElementById('viewingBanner');
+  const grid = document.getElementById('mainGrid');
+  if (viewingDay) {
+    banner.style.display = 'flex';
+    document.getElementById('viewingDate').textContent = formatDate(date);
+    grid.classList.add('readonly-mode');
+  } else {
+    banner.style.display = 'none';
+    grid.classList.remove('readonly-mode');
+  }
+  await loadDayData(date);
+  loadHistory();
+}
+
+window.goToToday = () => switchDay(todayKey());
+
+// ── Main init ─────────────────────────────────────────────────────────────
+async function initApp() {
+  loadWeather();
+  await loadGlobalSettings();
+  await loadDayData(todayKey());
+  loadHistory();
+}
+
+async function loadGlobalSettings() {
+  // Habit defs
+  const hd = await fsGet('settings/habits', { defs: ['Morning walk','Read 20 min','8 glasses of water'] });
+  habitDefs = hd.defs;
+
+  // Cal goal
+  const cg = await fsGet('settings/calGoal', { goal: 2000 });
+  calGoal = cg.goal;
+  document.getElementById('calGoalDisplay').textContent = `${calGoal} kcal`;
+
+  // Links
+  const lk = await fsGet('settings/links', { items: [
+    {label:'Gmail',url:'https://mail.google.com',emoji:'📧'},
+    {label:'Calendar',url:'https://calendar.google.com',emoji:'📅'},
+    {label:'GitHub',url:'https://github.com',emoji:'🐙'},
+    {label:'YouTube',url:'https://youtube.com',emoji:'▶️'},
+  ]});
+  links = lk.items;
+  renderLinks();
+
+  // Notes (persistent)
+  const nt = await fsGet('settings/notes', { text: '' });
+  document.getElementById('notesText').value = nt.text;
+  document.getElementById('notesText').addEventListener('input', debounce(() => {
+    fsSet('settings/notes', { text: document.getElementById('notesText').value });
+  }, 1000));
+}
+
+async function loadDayData(date) {
+  const data = await fsGet(`days/${date}`, {});
+
+  // Journal
+  document.getElementById('journalText').value = data.journal || '';
+  setSyncStatus('journalDot', 'journalStatus', 'synced', 'Synced');
+
+  // Mood
+  const mood = data.mood || null;
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('active', b.dataset.mood === mood));
+
+  // Habits (done list)
+  const done = data.habitDone || [];
+  renderHabits(done);
+
+  // Food
+  const food = data.food || [];
+  renderFood(food);
+}
+
+// ── Journal ───────────────────────────────────────────────────────────────
+document.getElementById('journalText').addEventListener('input', () => {
+  if (viewingDay) return;
+  setSyncStatus('journalDot', 'journalStatus', 'syncing', 'Saving…');
+  clearTimeout(saveTimer.journal);
+  saveTimer.journal = setTimeout(async () => {
+    await fsSet(`days/${todayKey()}`, { journal: document.getElementById('journalText').value });
+    setSyncStatus('journalDot', 'journalStatus', 'synced', 'Saved to cloud');
+    loadHistory();
+  }, 1000);
+});
+
+// ── Mood ──────────────────────────────────────────────────────────────────
+window.setMood = async (mood) => {
+  if (viewingDay) return;
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.toggle('active', b.dataset.mood === mood));
+  await fsSet(`days/${todayKey()}`, { mood });
+  loadHistory();
+};
+
+// ── Habits ────────────────────────────────────────────────────────────────
+function renderHabits(done) {
+  const list = document.getElementById('habitList');
+  list.innerHTML = '';
+  habitDefs.forEach((name, i) => {
+    const isDone = done.includes(i);
+    const row = document.createElement('div');
+    row.className = 'habit-row';
+    row.innerHTML = `
+      <div class="habit-box ${isDone ? 'done' : ''}"><span class="habit-check-icon">✓</span></div>
+      <span class="habit-name ${isDone ? 'done' : ''}">${name}</span>
+      <button style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;padding:2px 4px;" onclick="deleteHabit(${i})">×</button>
+    `;
+    row.querySelector('.habit-box').addEventListener('click', () => toggleHabit(i, done));
+    row.querySelector('.habit-name').addEventListener('click', () => toggleHabit(i, done));
+    list.appendChild(row);
+  });
+}
+
+async function toggleHabit(i, done) {
+  if (viewingDay) return;
+  const newDone = done.includes(i) ? done.filter(x=>x!==i) : [...done, i];
+  renderHabits(newDone);
+  await fsSet(`days/${todayKey()}`, { habitDone: newDone });
+}
+
+window.addHabit = async () => {
+  const inp = document.getElementById('habitInput');
+  const name = inp.value.trim();
+  if (!name) return;
+  habitDefs.push(name);
+  await fsSet('settings/habits', { defs: habitDefs });
+  inp.value = '';
+  const data = await fsGet(`days/${todayKey()}`, {});
+  renderHabits(data.habitDone || []);
+};
+
+window.deleteHabit = async (i) => {
+  habitDefs.splice(i, 1);
+  await fsSet('settings/habits', { defs: habitDefs });
+  const data = await fsGet(`days/${todayKey()}`, {});
+  const done = (data.habitDone || []).filter(x=>x!==i).map(x=>x>i?x-1:x);
+  await fsSet(`days/${todayKey()}`, { habitDone: done });
+  renderHabits(done);
+};
+
+// ── Food ──────────────────────────────────────────────────────────────────
+function renderFood(items) {
+  const list = document.getElementById('foodList');
+  list.innerHTML = '';
+  if (!items.length) {
+    list.innerHTML = '<li class="food-empty">Nothing logged yet today.</li>';
+  } else {
+    items.forEach((item, i) => {
+      const li = document.createElement('li');
+      li.className = 'food-item';
+      li.innerHTML = `<span class="food-name">${item.name}</span><span class="food-kcal">${item.cal} kcal</span><button class="food-del" onclick="removeFood(${i})">×</button>`;
+      list.appendChild(li);
+    });
+  }
+  const total = items.reduce((s,x) => s+x.cal, 0);
+  document.getElementById('calEaten').textContent = total;
+  const pct = Math.min((total/calGoal)*100, 100);
+  const bar = document.getElementById('calBarFill');
+  bar.style.width = pct + '%';
+  bar.classList.toggle('over', total > calGoal);
+}
+
+window.addFood = async () => {
+  if (viewingDay) return;
+  const name = document.getElementById('foodNameInput').value.trim();
+  const cal = parseInt(document.getElementById('foodCalInput').value);
+  if (!name || isNaN(cal)) return;
+  const data = await fsGet(`days/${todayKey()}`, {});
+  const food = [...(data.food || []), { name, cal }];
+  await fsSet(`days/${todayKey()}`, { food });
+  document.getElementById('foodNameInput').value = '';
+  document.getElementById('foodCalInput').value = '';
+  renderFood(food);
+  loadHistory();
+};
+
+window.removeFood = async (i) => {
+  if (viewingDay) return;
+  const data = await fsGet(`days/${todayKey()}`, {});
+  const food = [...(data.food || [])];
+  food.splice(i, 1);
+  await fsSet(`days/${todayKey()}`, { food });
+  renderFood(food);
+};
+
+window.editCalGoal = async () => {
+  if (viewingDay) return;
+  const val = prompt('Set your daily calorie goal:', calGoal);
+  const n = parseInt(val);
+  if (!isNaN(n) && n > 0) {
+    calGoal = n;
+    await fsSet('settings/calGoal', { goal: calGoal });
+    document.getElementById('calGoalDisplay').textContent = `${calGoal} kcal`;
+    const data = await fsGet(`days/${todayKey()}`, {});
+    renderFood(data.food || []);
+  }
+};
+
+document.getElementById('foodCalInput').addEventListener('keydown', e => { if(e.key==='Enter') window.addFood(); });
+document.getElementById('foodNameInput').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('foodCalInput').focus(); });
+
+// ── Links ─────────────────────────────────────────────────────────────────
+function renderLinks() {
+  const grid = document.getElementById('linksGrid');
+  grid.innerHTML = '';
+  links.forEach((lnk, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'link-chip';
+    chip.innerHTML = `<span class="link-icon">${lnk.emoji||'🔗'}</span><span>${lnk.label}</span><button class="link-del" onclick="removeLink(event,${i})">×</button>`;
+    chip.addEventListener('click', e => { if(e.target.classList.contains('link-del')) return; window.open(lnk.url,'_blank'); });
+    grid.appendChild(chip);
+  });
+}
+
+window.addLink = async () => {
+  const label = document.getElementById('linkLabel').value.trim();
+  const url = document.getElementById('linkUrl').value.trim();
+  const emoji = document.getElementById('linkEmoji').value.trim() || '🔗';
+  if (!label || !url) return;
+  links.push({ label, url, emoji });
+  await fsSet('settings/links', { items: links });
+  document.getElementById('linkLabel').value = '';
+  document.getElementById('linkUrl').value = '';
+  document.getElementById('linkEmoji').value = '';
+  renderLinks();
+};
+
+window.removeLink = async (e, i) => {
+  e.stopPropagation();
+  links.splice(i, 1);
+  await fsSet('settings/links', { items: links });
+  renderLinks();
+};
+
+document.getElementById('linkUrl').addEventListener('keydown', e => { if(e.key==='Enter') window.addLink(); });
+
+// ── Utils ─────────────────────────────────────────────────────────────────
+function setSyncStatus(dotId, labelId, state, text) {
+  const dot = document.getElementById(dotId);
+  dot.className = 'sync-dot ' + state;
+  document.getElementById(labelId).textContent = text;
+}
+
+function debounce(fn, ms) {
+  let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+}
+
+</script>
+</body>
+</html>
