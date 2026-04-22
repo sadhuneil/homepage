@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F5F0E8;
+    --bg2: #EDE8DE;
+    --bg3: #E3DDD2;
+    --surface: #FAF7F2;
+    --border: rgba(120,110,90,0.15);
+    --border2: rgba(120,110,90,0.28);
+    --text: #2A2520;
+    --text2: #6B6258;
+    --text3: #9E9488;
+    --accent: #7B5EA7;
+    --accent-light: #EDE8F5;
+    --green: #3D7A5F;
+    --green-light: #E4F0EB;
+    --amber: #B5742A;
+    --amber-light: #F5EBD8;
+    --red: #B54040;
+    --serif: 'Lora', Georgia, serif;
+    --sans: 'DM Sans', sans-serif;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── Layout ── */
+  .shell {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 36px 28px 60px;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border2);
+  }
+  .greeting {
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .greeting em { font-style: italic; color: var(--accent); }
+  .header-right { text-align: right; }
+  .date-display {
+    font-size: 14px;
+    color: var(--text2);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+  .clock {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.2;
+    margin-top: 2px;
+  }
+
+  /* ── Weather bar ── */
+  .weather-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: var(--text2);
+    flex-wrap: wrap;
+  }
+  .weather-icon { font-size: 24px; flex-shrink: 0; }
+  .weather-temp { font-family: var(--serif); font-size: 22px; color: var(--text); font-weight: 400; }
+  .weather-desc { flex: 1; }
+  .weather-detail { color: var(--text3); font-size: 13px; }
+  .weather-loading { color: var(--text3); font-style: italic; }
+
+  /* ── Main grid ── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 20px;
+  }
+  .col-left { display: flex; flex-direction: column; gap: 20px; }
+  .col-right { display: flex; flex-direction: column; gap: 20px; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    transition: border-color 0.2s;
+  }
+  .card:focus-within { border-color: var(--border2); }
+  .card-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 14px;
+  }
+
+  /* ── Journal ── */
+  .journal-textarea {
+    width: 100%;
+    min-height: 180px;
+    resize: vertical;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+    background: var(--bg2);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .journal-textarea::placeholder { color: var(--text3); font-style: italic; }
+  .journal-textarea:focus { border-color: var(--border2); }
+  .save-indicator {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 8px;
+    min-height: 18px;
+    transition: opacity 0.3s;
+    font-style: italic;
+  }
+
+  /* ── Mood ── */
+  .mood-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .mood-btn {
+    padding: 7px 16px;
+    border: 1px solid var(--border2);
+    border-radius: 100px;
+    font-size: 13px;
+    font-family: var(--sans);
+    cursor: pointer;
+    background: transparent;
+    color: var(--text2);
+    transition: all 0.15s;
+  }
+  .mood-btn:hover { background: var(--bg2); }
+  .mood-btn.active {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ── Habits ── */
+  .habit-list { display: flex; flex-direction: column; gap: 2px; }
+  .habit-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+  .habit-row:last-child { border-bottom: none; }
+  .habit-row:hover .habit-box { border-color: var(--border2); }
+  .habit-box {
+    width: 20px; height: 20px;
+    border: 1.5px solid var(--border2);
+    border-radius: 5px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .habit-box.done { background: var(--green); border-color: var(--green); }
+  .habit-check-icon { display: none; color: white; font-size: 12px; font-weight: 600; }
+  .habit-box.done .habit-check-icon { display: block; }
+  .habit-name { font-size: 14px; color: var(--text); flex: 1; }
+  .habit-name.done { text-decoration: line-through; color: var(--text3); }
+  .habit-add-row { display: flex; gap: 8px; margin-top: 12px; }
+  .habit-add-row input {
+    flex: 1;
+    padding: 7px 11px;
+    font-size: 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg2);
+    color: var(--text);
+    font-family: var(--sans);
+    outline: none;
+  }
+  .habit-add-row input:focus { border-color: var(--border2); }
+  .btn-ghost {
+    padding: 7px 14px;
+    font-size: 12px;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    font-family: var(--sans);
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .btn-ghost:hover { background: var(--bg2); }
+
+  /* ── Food tracker ── */
+  .cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .cal-eaten { font-family: var(--serif); font-size: 24px; font-weight: 400; color: var(--text); }
+  .cal-goal { font-size: 13px; color: var(--text3); }
+  .cal-bar-wrap {
+    height: 6px;
+    background: var(--bg3);
+    border-radius: 3px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .cal-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--green);
+    transition: width 0.4s ease;
+  }
+  .cal-bar-fill.over { background: var(--amber); }
+  .food-list { list-style: none; margin-bottom: 12px; }
+  .food-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    gap: 8px;
+  }
+  .food-item:last-child { border-bottom: none; }
+  .food-name { flex: 1; color: var(--text); }
+  .food-kcal { font-size: 13px; color: var(--text3); flex-shrink: 0; }
+  .food-del {
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0 2px;
+    background: none;
+    border: none;
+    transition: color 0.15s;
+  }
+  .food-del:hover { color: var(--red); }
+  .food-empty { font-size: 13px; color: var(--text3); font-style: italic; padding: 8px 0; }
+  .food-add-row { display: flex; gap: 8px; }
+  .food-add-row input {
+    padding: 8px 11px;
+    font-size: 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg2);
+    color: var(--text);
+    font-family: var(--sans);
+    outline: none;
+  }
+  .food-add-row input:focus { border-color: var(--border2); }
+  .food-add-row .food-name-input { flex: 1; }
+  .food-add-row .food-cal-input { width: 72px; }
+  .btn-add {
+    padding: 8px 14px;
+    font-size: 13px;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    background: var(--accent-light);
+    color: var(--accent);
+    cursor: pointer;
+    font-family: var(--sans);
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .btn-add:hover { background: #ddd5f0; }
+
+  /* ── Notes ── */
+  .notes-area {
+    width: 100%;
+    min-height: 100px;
+    resize: vertical;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 11px 13px;
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg2);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .notes-area::placeholder { color: var(--text3); }
+  .notes-area:focus { border-color: var(--border2); }
+
+  /* ── Quick links ── */
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .link-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 8px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--text2);
+    font-size: 12px;
+    text-align: center;
+    transition: all 0.15s;
+    cursor: pointer;
+    position: relative;
+  }
+  .link-chip:hover { background: var(--bg3); border-color: var(--border2); color: var(--text); }
+  .link-icon { font-size: 20px; }
+  .link-del {
+    position: absolute;
+    top: 3px; right: 5px;
+    font-size: 13px;
+    color: var(--text3);
+    cursor: pointer;
+    background: none;
+    border: none;
+    display: none;
+    line-height: 1;
+  }
+  .link-chip:hover .link-del { display: block; }
+  .link-del:hover { color: var(--red); }
+  .link-add-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .link-add-row input {
+    flex: 1;
+    min-width: 80px;
+    padding: 7px 10px;
+    font-size: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg2);
+    color: var(--text);
+    font-family: var(--sans);
+    outline: none;
+  }
+  .link-add-row input:focus { border-color: var(--border2); }
+
+  /* ── Calorie goal edit ── */
+  .cal-goal-edit {
+    font-size: 13px;
+    color: var(--text3);
+    cursor: pointer;
+    border-bottom: 1px dashed var(--text3);
+    text-decoration: none;
+  }
+  .cal-goal-edit:hover { color: var(--text2); }
+
+  /* ── Responsive ── */
+  @media (max-width: 720px) {
+    .shell { padding: 20px 16px 48px; }
+    .main-grid { grid-template-columns: 1fr; }
+    .greeting { font-size: 26px; }
+    .clock { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <div class="greeting" id="greeting">Good <em>morning</em></div>
+    </div>
+    <div class="header-right">
+      <div class="date-display" id="dateDisplay"></div>
+      <div class="clock" id="clock"></div>
+    </div>
+  </div>
+
+  <!-- Weather -->
+  <div class="weather-bar" id="weatherBar">
+    <span class="weather-loading">Loading weather…</span>
+  </div>
+
+  <!-- Main grid -->
+  <div class="main-grid">
+    <!-- LEFT -->
+    <div class="col-left">
+
+      <!-- Journal -->
+      <div class="card">
+        <div class="card-label">Today's thoughts</div>
+        <textarea class="journal-textarea" id="journalText" placeholder="What's on your mind today?"></textarea>
+        <div class="save-indicator" id="saveIndicator"></div>
+      </div>
+
+      <!-- Food tracker -->
+      <div class="card">
+        <div class="card-label">Food today</div>
+        <div class="cal-header">
+          <span class="cal-eaten"><span id="calEaten">0</span> <span style="font-size:14px;color:var(--text3);font-family:var(--sans);font-weight:300;">kcal</span></span>
+          <span class="cal-goal">
+            Goal: <span id="calGoalDisplay" class="cal-goal-edit" title="Click to change" onclick="editCalGoal()"></span>
+          </span>
+        </div>
+        <div class="cal-bar-wrap"><div class="cal-bar-fill" id="calBarFill"></div></div>
+        <ul class="food-list" id="foodList"></ul>
+        <div class="food-add-row">
+          <input class="food-name-input" type="text" id="foodNameInput" placeholder="Food name…" />
+          <input class="food-cal-input" type="number" id="foodCalInput" placeholder="kcal" min="0" />
+          <button class="btn-add" onclick="addFood()">Add</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="col-right">
+
+      <!-- Clock/Mood -->
+      <div class="card">
+        <div class="card-label">How are you feeling?</div>
+        <div class="mood-options" id="moodOptions">
+          <button class="mood-btn" data-mood="rough" onclick="setMood('rough')">Rough</button>
+          <button class="mood-btn" data-mood="okay" onclick="setMood('okay')">Okay</button>
+          <button class="mood-btn" data-mood="good" onclick="setMood('good')">Good</button>
+          <button class="mood-btn" data-mood="great" onclick="setMood('great')">Great</button>
+          <button class="mood-btn" data-mood="energised" onclick="setMood('energised')">Energised</button>
+          <button class="mood-btn" data-mood="tired" onclick="setMood('tired')">Tired</button>
+          <button class="mood-btn" data-mood="anxious" onclick="setMood('anxious')">Anxious</button>
+        </div>
+      </div>
+
+      <!-- Habits -->
+      <div class="card">
+        <div class="card-label">Habits</div>
+        <div class="habit-list" id="habitList"></div>
+        <div class="habit-add-row">
+          <input type="text" id="habitInput" placeholder="Add a habit…" onkeydown="if(event.key==='Enter')addHabit()" />
+          <button class="btn-ghost" onclick="addHabit()">Add</button>
+        </div>
+      </div>
+
+      <!-- Notes / Reminders -->
+      <div class="card">
+        <div class="card-label">Notes &amp; reminders</div>
+        <textarea class="notes-area" id="notesText" placeholder="Reminders, to-dos, quick thoughts…"></textarea>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="card">
+        <div class="card-label">Quick links</div>
+        <div class="links-grid" id="linksGrid"></div>
+        <div class="link-add-row">
+          <input type="text" id="linkLabel" placeholder="Label" style="max-width:90px;" />
+          <input type="text" id="linkUrl" placeholder="https://…" />
+          <input type="text" id="linkEmoji" placeholder="🔗" style="max-width:46px;" />
+          <button class="btn-ghost" onclick="addLink()">Add</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Helpers ──────────────────────────────────────────────────────────────
+const todayKey = () => new Date().toISOString().slice(0,10);
+
+function load(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+}
+function save(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+}
+
+// Per-day scoped keys
+const dayKey = (k) => `${k}_${todayKey()}`;
+
+// ── Clock & greeting ─────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours();
+  const mins = now.getMinutes().toString().padStart(2,'0');
+  const ampm = h >= 12 ? 'pm' : 'am';
+  const h12 = h % 12 || 12;
+  document.getElementById('clock').textContent = `${h12}:${mins} ${ampm}`;
+
+  const greet = h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening';
+  document.getElementById('greeting').innerHTML = `Good <em>${greet}</em>`;
+
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('dateDisplay').textContent =
+    `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+// ── Weather ───────────────────────────────────────────────────────────────
+const WX_ICONS = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌦️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'};
+const WX_DESC = {0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',48:'Foggy',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Slight rain',63:'Rain',65:'Heavy rain',71:'Slight snow',73:'Snow',75:'Heavy snow',80:'Showers',81:'Showers',82:'Heavy showers',95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
+
+async function loadWeather() {
+  const bar = document.getElementById('weatherBar');
+  try {
+    const pos = await new Promise((res,rej) => navigator.geolocation.getCurrentPosition(res,rej,{timeout:6000}));
+    const {latitude:lat, longitude:lon} = pos.coords;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relativehumidity_2m,windspeed_10m&temperature_unit=celsius&windspeed_unit=mph&timezone=auto`;
+    const data = await fetch(url).then(r=>r.json());
+    const cw = data.current_weather;
+    const code = cw.weathercode;
+    const icon = WX_ICONS[code] || '🌡️';
+    const desc = WX_DESC[code] || '';
+    const tempC = Math.round(cw.temperature);
+    const tempF = Math.round(tempC * 9/5 + 32);
+    const wind = Math.round(cw.windspeed);
+
+    bar.innerHTML = `
+      <span class="weather-icon">${icon}</span>
+      <span class="weather-temp">${tempC}°C / ${tempF}°F</span>
+      <span class="weather-desc">${desc}</span>
+      <span class="weather-detail">Wind ${wind} mph</span>
+    `;
+  } catch(e) {
+    bar.innerHTML = `<span class="weather-loading">Weather unavailable — allow location access to see the forecast.</span>`;
+  }
+}
+loadWeather();
+
+// ── Journal ───────────────────────────────────────────────────────────────
+const journalEl = document.getElementById('journalText');
+const saveEl = document.getElementById('saveIndicator');
+let journalTimer;
+
+journalEl.value = load(dayKey('journal'), '');
+journalEl.addEventListener('input', () => {
+  clearTimeout(journalTimer);
+  saveEl.textContent = '';
+  journalTimer = setTimeout(() => {
+    save(dayKey('journal'), journalEl.value);
+    saveEl.textContent = 'Saved';
+    setTimeout(() => { saveEl.textContent = ''; }, 1800);
+  }, 800);
+});
+
+// ── Notes ─────────────────────────────────────────────────────────────────
+const notesEl = document.getElementById('notesText');
+// Notes persist across days
+notesEl.value = load('notes_persistent', '');
+notesEl.addEventListener('input', () => {
+  save('notes_persistent', notesEl.value);
+});
+
+// ── Mood ──────────────────────────────────────────────────────────────────
+function setMood(mood) {
+  save(dayKey('mood'), mood);
+  document.querySelectorAll('.mood-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mood === mood);
+  });
+}
+const savedMood = load(dayKey('mood'), null);
+if (savedMood) {
+  document.querySelector(`.mood-btn[data-mood="${savedMood}"]`)?.classList.add('active');
+}
+
+// ── Habits ────────────────────────────────────────────────────────────────
+// Habit definitions persist; done states are per-day
+let habitDefs = load('habit_defs', ['Morning walk','Read 20 min','8 glasses of water']);
+let habitDone = load(dayKey('habit_done'), []);
+
+function renderHabits() {
+  const list = document.getElementById('habitList');
+  list.innerHTML = '';
+  habitDefs.forEach((name, i) => {
+    const done = habitDone.includes(i);
+    const row = document.createElement('div');
+    row.className = 'habit-row';
+    row.innerHTML = `
+      <div class="habit-box ${done ? 'done' : ''}"><span class="habit-check-icon">✓</span></div>
+      <span class="habit-name ${done ? 'done' : ''}">${name}</span>
+      <button onclick="deleteHabit(${i})" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;padding:2px 4px;" title="Remove">×</button>
+    `;
+    row.querySelector('.habit-box').addEventListener('click', () => toggleHabit(i));
+    row.querySelector('.habit-name').addEventListener('click', () => toggleHabit(i));
+    list.appendChild(row);
+  });
+}
+
+function toggleHabit(i) {
+  if (habitDone.includes(i)) habitDone = habitDone.filter(x => x !== i);
+  else habitDone.push(i);
+  save(dayKey('habit_done'), habitDone);
+  renderHabits();
+}
+
+function addHabit() {
+  const inp = document.getElementById('habitInput');
+  const name = inp.value.trim();
+  if (!name) return;
+  habitDefs.push(name);
+  save('habit_defs', habitDefs);
+  inp.value = '';
+  renderHabits();
+}
+
+function deleteHabit(i) {
+  habitDefs.splice(i, 1);
+  habitDone = habitDone.filter(x => x !== i).map(x => x > i ? x-1 : x);
+  save('habit_defs', habitDefs);
+  save(dayKey('habit_done'), habitDone);
+  renderHabits();
+}
+
+renderHabits();
+
+// ── Food tracker ──────────────────────────────────────────────────────────
+let foodItems = load(dayKey('food'), []);
+let calGoal = load('cal_goal', 2000);
+
+document.getElementById('calGoalDisplay').textContent = `${calGoal} kcal`;
+
+function renderFood() {
+  const list = document.getElementById('foodList');
+  list.innerHTML = '';
+  if (foodItems.length === 0) {
+    list.innerHTML = '<li class="food-empty">Nothing logged yet today.</li>';
+  } else {
+    foodItems.forEach((item, i) => {
+      const li = document.createElement('li');
+      li.className = 'food-item';
+      li.innerHTML = `
+        <span class="food-name">${item.name}</span>
+        <span class="food-kcal">${item.cal} kcal</span>
+        <button class="food-del" onclick="removeFood(${i})" title="Remove">×</button>
+      `;
+      list.appendChild(li);
+    });
+  }
+  const total = foodItems.reduce((s,x) => s + x.cal, 0);
+  document.getElementById('calEaten').textContent = total;
+  const pct = Math.min((total / calGoal) * 100, 100);
+  const bar = document.getElementById('calBarFill');
+  bar.style.width = pct + '%';
+  bar.classList.toggle('over', total > calGoal);
+}
+
+function addFood() {
+  const nameEl = document.getElementById('foodNameInput');
+  const calEl = document.getElementById('foodCalInput');
+  const name = nameEl.value.trim();
+  const cal = parseInt(calEl.value);
+  if (!name || isNaN(cal) || cal < 0) return;
+  foodItems.push({ name, cal });
+  save(dayKey('food'), foodItems);
+  nameEl.value = ''; calEl.value = '';
+  renderFood();
+}
+
+function removeFood(i) {
+  foodItems.splice(i, 1);
+  save(dayKey('food'), foodItems);
+  renderFood();
+}
+
+function editCalGoal() {
+  const val = prompt('Set your daily calorie goal:', calGoal);
+  const n = parseInt(val);
+  if (!isNaN(n) && n > 0) {
+    calGoal = n;
+    save('cal_goal', calGoal);
+    document.getElementById('calGoalDisplay').textContent = `${calGoal} kcal`;
+    renderFood();
+  }
+}
+
+// Enter to add food
+document.getElementById('foodCalInput').addEventListener('keydown', e => { if(e.key==='Enter') addFood(); });
+document.getElementById('foodNameInput').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('foodCalInput').focus(); });
+
+renderFood();
+
+// ── Quick links ───────────────────────────────────────────────────────────
+let links = load('quick_links', [
+  { label: 'Gmail', url: 'https://mail.google.com', emoji: '📧' },
+  { label: 'Calendar', url: 'https://calendar.google.com', emoji: '📅' },
+  { label: 'GitHub', url: 'https://github.com', emoji: '🐙' },
+  { label: 'YouTube', url: 'https://youtube.com', emoji: '▶️' },
+]);
+
+function renderLinks() {
+  const grid = document.getElementById('linksGrid');
+  grid.innerHTML = '';
+  links.forEach((lnk, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'link-chip';
+    chip.innerHTML = `
+      <span class="link-icon">${lnk.emoji || '🔗'}</span>
+      <span>${lnk.label}</span>
+      <button class="link-del" onclick="removeLink(event,${i})">×</button>
+    `;
+    chip.addEventListener('click', (e) => {
+      if (e.target.classList.contains('link-del')) return;
+      window.open(lnk.url, '_blank');
+    });
+    grid.appendChild(chip);
+  });
+}
+
+function addLink() {
+  const label = document.getElementById('linkLabel').value.trim();
+  const url = document.getElementById('linkUrl').value.trim();
+  const emoji = document.getElementById('linkEmoji').value.trim() || '🔗';
+  if (!label || !url) return;
+  links.push({ label, url, emoji });
+  save('quick_links', links);
+  document.getElementById('linkLabel').value = '';
+  document.getElementById('linkUrl').value = '';
+  document.getElementById('linkEmoji').value = '';
+  renderLinks();
+}
+
+function removeLink(e, i) {
+  e.stopPropagation();
+  links.splice(i, 1);
+  save('quick_links', links);
+  renderLinks();
+}
+
+document.getElementById('linkUrl').addEventListener('keydown', e => { if(e.key==='Enter') addLink(); });
+
+renderLinks();
+</script>
+</body>
+</html>
