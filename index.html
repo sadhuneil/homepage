@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ━━ THEMES ━━ */
+:root {
+  --bg:#F5F0E8;--bg2:#EDE8DE;--bg3:#E3DDD2;
+  --surface:#FAF7F2;--border:rgba(120,110,90,0.15);--border2:rgba(120,110,90,0.28);
+  --text:#2A2520;--text2:#6B6258;--text3:#9E9488;
+  --accent:#7B5EA7;--accent-light:#EDE8F5;
+  --green:#3D7A5F;--amber:#B5742A;--red:#B54040;
+  --serif:'Lora',Georgia,serif;--sans:'DM Sans',sans-serif;
+  --radius:12px;--radius-sm:8px;
+}
+[data-theme="dark"] {
+  --bg:#16141A;--bg2:#1E1C24;--bg3:#25222E;
+  --surface:#1E1C24;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);
+  --text:#E8E4F0;--text2:#A09AAD;--text3:#6B6578;
+  --accent:#9D7FD4;--accent-light:#2A2040;
+  --green:#4A9B76;--amber:#C98A3A;--red:#C95555;
+}
+[data-theme="forest"] {
+  --bg:#EFF4EE;--bg2:#E3EDE1;--bg3:#D5E3D2;
+  --surface:#F6FAF5;--border:rgba(60,90,55,0.15);--border2:rgba(60,90,55,0.28);
+  --text:#1E2E1A;--text2:#4A6544;--text3:#7A9A74;
+  --accent:#3D7A5F;--accent-light:#DFF0E8;
+  --green:#3D7A5F;--amber:#8A6A1A;--red:#9A3A3A;
+}
+[data-theme="ocean"] {
+  --bg:#EEF3F8;--bg2:#E0EAF3;--bg3:#D0DFF0;
+  --surface:#F5F9FD;--border:rgba(30,70,120,0.12);--border2:rgba(30,70,120,0.25);
+  --text:#0F1E35;--text2:#3A5A80;--text3:#6A8AAA;
+  --accent:#1A6BAF;--accent-light:#DEECf8;
+  --green:#1A8A6A;--amber:#8A6A1A;--red:#9A3A3A;
+}
+[data-theme="midnight"] {
+  --bg:#0A0C14;--bg2:#0F1220;--bg3:#141828;
+  --surface:#0F1220;--border:rgba(100,140,255,0.1);--border2:rgba(100,140,255,0.2);
+  --text:#C8D8FF;--text2:#7A90CC;--text3:#445580;
+  --accent:#6080FF;--accent-light:#151E40;
+  --green:#3A9A70;--amber:#AA8A3A;--red:#AA4444;
+}
+[data-theme="rose"] {
+  --bg:#FDF0F2;--bg2:#F8E4E8;--bg3:#F0D4DA;
+  --surface:#FDF8F9;--border:rgba(160,60,80,0.12);--border2:rgba(160,60,80,0.25);
+  --text:#2A1018;--text2:#804050;--text3:#AA7080;
+  --accent:#C0405A;--accent-light:#FCE4E8;
+  --green:#5A8A60;--amber:#9A7030;--red:#C0405A;
+}
+
+body { font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;transition:background 0.3s,color 0.3s; }
+
+/* ━━ AUTH ━━ */
+#authScreen { display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:20px; }
+.auth-title { font-family:var(--serif);font-size:32px;color:var(--text); }
+.auth-sub { font-size:14px;color:var(--text2); }
+.btn-google { display:flex;align-items:center;gap:12px;padding:12px 24px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font-family:var(--sans);font-size:15px;cursor:pointer;transition:background 0.15s; }
+.btn-google:hover { background:var(--bg2); }
+.btn-google svg { width:20px;height:20px; }
+.auth-error { font-size:13px;color:var(--red); }
+
+/* ━━ SHELL ━━ */
+#app { display:none; }
+.shell { max-width:1100px;margin:0 auto;padding:36px 28px 60px; }
+
+/* ━━ HEADER ━━ */
+.header { display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border2); }
+.greeting { font-family:var(--serif);font-size:36px;font-weight:400;line-height:1.2; }
+.greeting em { font-style:italic;color:var(--accent); }
+.header-right { text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px; }
+.date-display { font-size:14px;color:var(--text2);font-weight:300; }
+.clock { font-family:var(--serif);font-size:28px;font-weight:400; }
+.user-row { display:flex;align-items:center;gap:10px;margin-top:6px; }
+.user-avatar { width:28px;height:28px;border-radius:50%;object-fit:cover; }
+.user-name { font-size:13px;color:var(--text2); }
+.btn-signout { font-size:12px;color:var(--text3);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0; }
+
+/* ━━ NAV ━━ */
+.nav-tabs { display:flex;align-items:center;gap:4px;margin-bottom:28px;border-bottom:1px solid var(--border2);padding-bottom:0; }
+.nav-tab { padding:10px 18px;font-size:14px;font-family:var(--sans);color:var(--text2);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.15s; }
+.nav-tab:hover { color:var(--text); }
+.nav-tab.active { color:var(--accent);border-bottom-color:var(--accent);font-weight:500; }
+.nav-spacer { flex:1; }
+.nav-actions { display:flex;align-items:center;gap:8px;padding-bottom:8px; }
+
+/* ━━ THEME PICKER ━━ */
+.theme-btn { display:flex;align-items:center;gap:6px;padding:6px 12px;font-size:12px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--surface);color:var(--text2);cursor:pointer;font-family:var(--sans); }
+.theme-btn:hover { background:var(--bg2); }
+.theme-wrap { position:relative; }
+.theme-dropdown { position:absolute;top:calc(100% + 6px);right:0;background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:8px;display:none;flex-direction:column;gap:4px;z-index:100;min-width:170px;box-shadow:0 8px 24px rgba(0,0,0,0.12); }
+.theme-dropdown.open { display:flex; }
+.theme-option { display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text);border:none;background:none;font-family:var(--sans);width:100%;text-align:left;transition:background 0.1s; }
+.theme-option:hover { background:var(--bg2); }
+.theme-option.active { color:var(--accent);font-weight:500; }
+.theme-swatch { width:14px;height:14px;border-radius:50%;flex-shrink:0;border:1px solid rgba(0,0,0,0.1); }
+
+/* ━━ CALENDAR ━━ */
+.cal-picker-card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:24px; }
+.cal-picker-inner { display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start; }
+.cal-picker-left { flex:1;min-width:240px; }
+.cal-nav { display:flex;align-items:center;gap:8px;margin-bottom:14px; }
+.cal-nav-btn { background:none;border:1px solid var(--border2);border-radius:var(--radius-sm);padding:4px 10px;color:var(--text2);cursor:pointer;font-size:16px;line-height:1.4;transition:background 0.15s; }
+.cal-nav-btn:hover { background:var(--bg2); }
+.cal-month-label { font-family:var(--serif);font-size:16px;color:var(--text);flex:1;text-align:center; }
+.cal-grid { display:grid;grid-template-columns:repeat(7,1fr);gap:3px; }
+.cal-dow { text-align:center;font-size:10px;font-weight:500;color:var(--text3);letter-spacing:0.05em;padding:3px 0; }
+.cal-day { aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:12px;cursor:pointer;color:var(--text2);transition:all 0.12s;border:1px solid transparent;position:relative; }
+.cal-day:hover:not(.empty) { background:var(--bg2);color:var(--text); }
+.cal-day.today { color:var(--accent);font-weight:500;border-color:var(--accent); }
+.cal-day.has-entry::after { content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:var(--green); }
+.cal-day.selected { background:var(--accent-light);color:var(--accent);font-weight:500; }
+.cal-day.other-month { opacity:0.3; }
+.cal-day.empty { cursor:default; }
+.viewing-banner { display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--radius-sm);font-size:13px;color:var(--accent);flex:1;min-width:180px; }
+.viewing-banner button { background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px;text-decoration:underline;font-family:var(--sans);white-space:nowrap; }
+.viewing-none { display:flex;align-items:center;padding:10px 0;font-size:13px;color:var(--text3);font-style:italic;flex:1; }
+
+/* ━━ WEATHER ━━ */
+.weather-bar { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;gap:14px;margin-bottom:24px;font-size:14px;color:var(--text2);flex-wrap:wrap; }
+.weather-temp { font-family:var(--serif);font-size:22px;color:var(--text); }
+.weather-loc { font-size:12px;color:var(--text3); }
+.weather-search { display:flex;gap:6px;align-items:center;margin-left:auto; }
+.weather-input { padding:6px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none;width:150px; }
+.weather-input:focus { border-color:var(--border2); }
+
+/* ━━ MAIN GRID ━━ */
+.main-grid { display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px; }
+.col-left,.col-right { display:flex;flex-direction:column;gap:20px; }
+.card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;transition:border-color 0.2s; }
+.card:focus-within { border-color:var(--border2); }
+.card-label { font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px; }
+.readonly-mode textarea,.readonly-mode input,.readonly-mode button:not(.allow-in-readonly) { pointer-events:none;opacity:0.7; }
+
+/* ━━ JOURNAL ━━ */
+.journal-textarea { width:100%;min-height:180px;resize:vertical;border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-family:var(--serif);font-size:15px;line-height:1.75;color:var(--text);background:var(--bg2);outline:none;transition:border-color 0.2s; }
+.journal-textarea::placeholder { color:var(--text3);font-style:italic; }
+.journal-textarea:focus { border-color:var(--border2); }
+.sync-status { font-size:12px;color:var(--text3);margin-top:8px;display:flex;align-items:center; }
+.sync-dot { display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--text3);margin-right:5px;transition:background 0.3s; }
+.sync-dot.synced { background:var(--green); }
+.sync-dot.syncing { background:var(--amber); }
+
+/* ━━ MOOD ━━ */
+.mood-options { display:flex;gap:8px;flex-wrap:wrap; }
+.mood-btn { padding:7px 16px;border:1px solid var(--border2);border-radius:100px;font-size:13px;font-family:var(--sans);cursor:pointer;background:transparent;color:var(--text2);transition:all 0.15s; }
+.mood-btn:hover { background:var(--bg2); }
+.mood-btn.active { background:var(--accent-light);border-color:var(--accent);color:var(--accent);font-weight:500; }
+
+/* ━━ HABITS ━━ */
+.habit-list { display:flex;flex-direction:column;gap:2px; }
+.habit-row { display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer;user-select:none; }
+.habit-row:last-child { border-bottom:none; }
+.habit-box { width:20px;height:20px;border:1.5px solid var(--border2);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s; }
+.habit-box.done { background:var(--green);border-color:var(--green); }
+.habit-check-icon { display:none;color:white;font-size:12px;font-weight:600; }
+.habit-box.done .habit-check-icon { display:block; }
+.habit-name { font-size:14px;flex:1; }
+.habit-name.done { text-decoration:line-through;color:var(--text3); }
+.habit-add-row { display:flex;gap:8px;margin-top:12px; }
+
+/* ━━ SHARED INPUTS ━━ */
+.habit-add-row input,.food-add-row input,.link-add-row input,.notes-area {
+  padding:7px 11px;font-size:13px;border:1px solid var(--border);
+  border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none;
+}
+.habit-add-row input { flex:1; }
+.habit-add-row input:focus,.food-add-row input:focus,.link-add-row input:focus,.notes-area:focus { border-color:var(--border2); }
+.btn-ghost { padding:7px 14px;font-size:12px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--sans);white-space:nowrap;transition:background 0.15s; }
+.btn-ghost:hover { background:var(--bg2); }
+
+/* ━━ FOOD ━━ */
+.cal-header { display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px; }
+.cal-eaten { font-family:var(--serif);font-size:24px; }
+.cal-goal-lbl { font-size:13px;color:var(--text3); }
+.cal-goal-edit { border-bottom:1px dashed var(--text3);cursor:pointer; }
+.cal-bar-wrap { height:6px;background:var(--bg3);border-radius:3px;margin-bottom:16px;overflow:hidden; }
+.cal-bar-fill { height:100%;border-radius:3px;background:var(--green);transition:width 0.4s; }
+.cal-bar-fill.over { background:var(--amber); }
+.food-list { list-style:none;margin-bottom:12px; }
+.food-item { display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px;gap:8px; }
+.food-item:last-child { border-bottom:none; }
+.food-name { flex:1; }
+.food-kcal { font-size:13px;color:var(--text3);flex-shrink:0; }
+.food-del { color:var(--text3);cursor:pointer;font-size:16px;background:none;border:none;transition:color 0.15s; }
+.food-del:hover { color:var(--red); }
+.food-empty { font-size:13px;color:var(--text3);font-style:italic;padding:8px 0; }
+.food-add-row { display:flex;gap:8px; }
+.food-add-row .food-name-input { flex:1; }
+.food-add-row .food-cal-input { width:72px; }
+.btn-add { padding:8px 14px;font-size:13px;border:1px solid var(--accent);border-radius:var(--radius-sm);background:var(--accent-light);color:var(--accent);cursor:pointer;font-family:var(--sans);font-weight:500;white-space:nowrap;transition:filter 0.15s; }
+.btn-add:hover { filter:brightness(0.93); }
+
+/* ━━ NOTES ━━ */
+.notes-area { width:100%;min-height:100px;resize:vertical;font-size:14px;line-height:1.6; }
+
+/* ━━ LINKS ━━ */
+.links-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-bottom:12px; }
+.link-chip { display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 8px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-size:12px;text-align:center;transition:all 0.15s;cursor:pointer;position:relative; }
+.link-chip:hover { background:var(--bg3);border-color:var(--border2);color:var(--text); }
+.link-icon { font-size:20px; }
+.link-del { position:absolute;top:3px;right:5px;font-size:13px;color:var(--text3);cursor:pointer;background:none;border:none;display:none; }
+.link-chip:hover .link-del { display:block; }
+.link-del:hover { color:var(--red); }
+.link-add-row { display:flex;gap:6px;flex-wrap:wrap; }
+.link-add-row input { min-width:70px; }
+#linkLabel { max-width:90px; }
+#linkEmoji { max-width:46px; }
+
+/* ━━ MEDIA PAGE ━━ */
+#mediaPage { display:none; }
+.media-tabs { display:flex;gap:4px;margin-bottom:20px;background:var(--bg2);border-radius:var(--radius);padding:4px;width:fit-content; }
+.media-tab { padding:7px 18px;font-size:13px;font-family:var(--sans);border:none;border-radius:var(--radius-sm);cursor:pointer;background:transparent;color:var(--text2);transition:all 0.15s; }
+.media-tab.active { background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+.media-add-bar { display:flex;gap:10px;align-items:flex-end;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:20px;flex-wrap:wrap; }
+.media-field { display:flex;flex-direction:column;gap:5px; }
+.media-field label { font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3); }
+.media-field input,.media-field select { padding:8px 11px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none; }
+.media-field input:focus,.media-field select:focus { border-color:var(--border2); }
+.media-field.grow { flex:1;min-width:150px; }
+.media-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px; }
+.media-card { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;position:relative; }
+.media-card-title { font-family:var(--serif);font-size:16px;font-weight:400;color:var(--text);margin-bottom:3px;padding-right:24px; }
+.media-card-meta { font-size:12px;color:var(--text3);margin-bottom:8px; }
+.media-card-status { display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:500;margin-bottom:8px; }
+.status-completed { background:var(--accent-light);color:var(--accent); }
+.status-in-progress { background:#FFF3E0;color:#B06000; }
+[data-theme="dark"] .status-in-progress,[data-theme="midnight"] .status-in-progress { background:#2A1500;color:#FFA040; }
+.status-want-to { background:var(--bg2);color:var(--text2); }
+.media-stars { color:#E0A800;font-size:14px;margin-bottom:6px; }
+.media-thoughts { font-size:13px;color:var(--text2);line-height:1.5;font-style:italic;border-left:2px solid var(--border2);padding-left:10px;margin-top:8px; }
+.media-del-btn { position:absolute;top:12px;right:12px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;opacity:0;transition:opacity 0.15s; }
+.media-card:hover .media-del-btn { opacity:1; }
+.media-del-btn:hover { color:var(--red); }
+.media-empty { text-align:center;padding:48px 20px;color:var(--text3);font-style:italic;font-size:14px;grid-column:1/-1; }
+.media-stats { display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap; }
+.media-stat { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;text-align:center;flex:1;min-width:80px; }
+.media-stat-num { font-family:var(--serif);font-size:24px;color:var(--text); }
+.media-stat-lbl { font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em; }
+.year-filter { display:flex;align-items:center;gap:8px;margin-bottom:16px; }
+.year-filter select { padding:6px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none; }
+.year-filter label { font-size:13px;color:var(--text2); }
+
+@media (max-width:720px) {
+  .shell { padding:20px 16px 48px; }
+  .main-grid { grid-template-columns:1fr; }
+  .greeting { font-size:26px; }
+  .clock { font-size:22px; }
+  .media-grid { grid-template-columns:1fr; }
+  .cal-picker-inner { flex-direction:column; }
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="authScreen">
+  <div class="auth-title">Good to see you.</div>
+  <div class="auth-sub">Sign in to access your dashboard from any device.</div>
+  <button class="btn-google" id="signInBtn">
+    <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+    Sign in with Google
+  </button>
+  <div class="auth-error" id="authError"></div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<div class="shell">
+
+  <div class="header">
+    <div><div class="greeting" id="greeting">Good <em>morning</em></div></div>
+    <div class="header-right">
+      <div class="date-display" id="dateDisplay"></div>
+      <div class="clock" id="clock"></div>
+      <div class="user-row">
+        <img class="user-avatar" id="userAvatar" src="" alt="" />
+        <span class="user-name" id="userName"></span>
+        <button class="btn-signout" onclick="signOut()">Sign out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('life')">Life</button>
+    <button class="nav-tab" onclick="showPage('media')">Media</button>
+    <div class="nav-spacer"></div>
+    <div class="nav-actions">
+      <div class="theme-wrap">
+        <button class="theme-btn" onclick="toggleThemeMenu()">🎨 Theme</button>
+        <div class="theme-dropdown" id="themeDropdown">
+          <button class="theme-option active" data-theme="default" onclick="setTheme('default')"><span class="theme-swatch" style="background:#F5F0E8;"></span>Warm parchment</button>
+          <button class="theme-option" data-theme="dark" onclick="setTheme('dark')"><span class="theme-swatch" style="background:#16141A;border-color:#555;"></span>Dark</button>
+          <button class="theme-option" data-theme="forest" onclick="setTheme('forest')"><span class="theme-swatch" style="background:#EFF4EE;border-color:#8ab08a;"></span>Forest</button>
+          <button class="theme-option" data-theme="ocean" onclick="setTheme('ocean')"><span class="theme-swatch" style="background:#EEF3F8;border-color:#8aafd0;"></span>Ocean</button>
+          <button class="theme-option" data-theme="midnight" onclick="setTheme('midnight')"><span class="theme-swatch" style="background:#0A0C14;border-color:#3050aa;"></span>Midnight</button>
+          <button class="theme-option" data-theme="rose" onclick="setTheme('rose')"><span class="theme-swatch" style="background:#FDF0F2;border-color:#e0a0aa;"></span>Rose</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LIFE PAGE ══ -->
+  <div id="lifePage">
+
+    <!-- Calendar + banner -->
+    <div class="cal-picker-card">
+      <div class="cal-picker-inner">
+        <div class="cal-picker-left">
+          <div class="cal-nav">
+            <button class="cal-nav-btn" onclick="calPrevMonth()">&#8249;</button>
+            <span class="cal-month-label" id="calMonthLabel"></span>
+            <button class="cal-nav-btn" onclick="calNextMonth()">&#8250;</button>
+          </div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;justify-content:center;flex:1;min-width:180px;">
+          <div class="viewing-banner" id="viewingBanner" style="display:none;">
+            Viewing <strong id="viewingDate" style="margin:0 4px;"></strong>
+            <button class="allow-in-readonly" onclick="goToToday()">Back to today</button>
+          </div>
+          <div class="viewing-none" id="viewingNone">Tap a day on the calendar to view past entries.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weather -->
+    <div class="weather-bar" id="weatherBar">
+      <span style="color:var(--text3);font-style:italic;">Loading weather…</span>
+    </div>
+
+    <!-- Main grid -->
+    <div class="main-grid" id="mainGrid">
+      <div class="col-left">
+        <div class="card">
+          <div class="card-label">Today's thoughts</div>
+          <textarea class="journal-textarea" id="journalText" placeholder="What's on your mind today?"></textarea>
+          <div class="sync-status"><span class="sync-dot" id="journalDot"></span><span id="journalStatus">—</span></div>
+        </div>
+        <div class="card">
+          <div class="card-label">Food today</div>
+          <div class="cal-header">
+            <span class="cal-eaten"><span id="calEaten">0</span> <span style="font-size:14px;color:var(--text3);font-weight:300;">kcal</span></span>
+            <span class="cal-goal-lbl">Goal: <span id="calGoalDisplay" class="cal-goal-edit" onclick="editCalGoal()"></span></span>
+          </div>
+          <div class="cal-bar-wrap"><div class="cal-bar-fill" id="calBarFill"></div></div>
+          <ul class="food-list" id="foodList"></ul>
+          <div class="food-add-row">
+            <input class="food-name-input" type="text" id="foodNameInput" placeholder="Food name…" />
+            <input class="food-cal-input" type="number" id="foodCalInput" placeholder="kcal" min="0" />
+            <button class="btn-add" onclick="addFood()">Add</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="card">
+          <div class="card-label">How are you feeling?</div>
+          <div class="mood-options" id="moodOptions">
+            <button class="mood-btn" data-mood="rough" onclick="setMood('rough')">Rough</button>
+            <button class="mood-btn" data-mood="okay" onclick="setMood('okay')">Okay</button>
+            <button class="mood-btn" data-mood="good" onclick="setMood('good')">Good</button>
+            <button class="mood-btn" data-mood="great" onclick="setMood('great')">Great</button>
+            <button class="mood-btn" data-mood="energised" onclick="setMood('energised')">Energised</button>
+            <button class="mood-btn" data-mood="tired" onclick="setMood('tired')">Tired</button>
+            <button class="mood-btn" data-mood="anxious" onclick="setMood('anxious')">Anxious</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Habits</div>
+          <div class="habit-list" id="habitList"></div>
+          <div class="habit-add-row">
+            <input type="text" id="habitInput" placeholder="Add a habit…" onkeydown="if(event.key==='Enter')addHabit()" />
+            <button class="btn-ghost" onclick="addHabit()">Add</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Notes &amp; reminders</div>
+          <textarea class="notes-area" id="notesText" placeholder="Reminders, to-dos, quick thoughts…"></textarea>
+        </div>
+        <div class="card">
+          <div class="card-label">Quick links</div>
+          <div class="links-grid" id="linksGrid"></div>
+          <div class="link-add-row">
+            <input type="text" id="linkLabel" placeholder="Label" />
+            <input type="text" id="linkUrl" placeholder="https://…" />
+            <input type="text" id="linkEmoji" placeholder="🔗" />
+            <button class="btn-ghost" onclick="addLink()">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MEDIA PAGE ══ -->
+  <div id="mediaPage">
+    <div class="media-tabs">
+      <button class="media-tab active" onclick="switchMediaTab('books')">📚 Books</button>
+      <button class="media-tab" onclick="switchMediaTab('movies')">🎬 Movies</button>
+      <button class="media-tab" onclick="switchMediaTab('tv')">📺 TV</button>
+      <button class="media-tab" onclick="switchMediaTab('games')">🎮 Games</button>
+    </div>
+    <div class="media-add-bar">
+      <div class="media-field grow"><label>Title</label><input type="text" id="mediaTitle" placeholder="Enter title…" /></div>
+      <div class="media-field"><label>Creator</label><input type="text" id="mediaCreator" placeholder="Author / Director…" style="width:140px;" /></div>
+      <div class="media-field"><label>Year</label><input type="number" id="mediaYear" placeholder="2024" style="width:76px;" /></div>
+      <div class="media-field"><label>Status</label>
+        <select id="mediaStatus">
+          <option value="completed">Completed</option>
+          <option value="in-progress">In progress</option>
+          <option value="want-to">Want to</option>
+        </select>
+      </div>
+      <div class="media-field"><label>Rating</label>
+        <select id="mediaRating">
+          <option value="0">— no rating —</option>
+          <option value="1">★</option>
+          <option value="2">★★</option>
+          <option value="3">★★★</option>
+          <option value="4">★★★★</option>
+          <option value="5">★★★★★</option>
+        </select>
+      </div>
+      <div class="media-field grow"><label>Thoughts</label><input type="text" id="mediaThoughts" placeholder="Optional notes…" /></div>
+      <button class="btn-add" onclick="addMedia()" style="align-self:flex-end;">Add</button>
+    </div>
+    <div class="media-stats" id="mediaStats"></div>
+    <div class="year-filter">
+      <label>Filter by year:</label>
+      <select id="mediaYearFilter" onchange="renderMedia()">
+        <option value="all">All years</option>
+      </select>
+    </div>
+    <div class="media-grid" id="mediaGrid"></div>
+  </div>
+
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut as fbSignOut }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🔧 PASTE YOUR FIREBASE CONFIG HERE
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const firebaseConfig = {
+  apiKey: "AIzaSyBPq-tEX0rWsPMYOhDjJljgyc_SC_5oj9g",
+  authDomain: "my-dashboard-9030a.firebaseapp.com",
+  projectId: "my-dashboard-9030a",
+  storageBucket: "my-dashboard-9030a.firebasestorage.app",
+  messagingSenderId: "445928165671",
+  appId: "1:445928165671:web:727ece492a59a4469ed902",
+  measurementId: "G-FTR1776T8E"
+};
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+const provider = new GoogleAuthProvider();
+
+let currentUser = null;
+let viewingDay = null;
+let habitDefs = [];
+let calGoal = 2000;
+let links = [];
+let saveTimer = {};
+let knownDates = new Set();
+let calViewDate = new Date();
+let currentMediaTab = 'books';
+let mediaItems = [];
+
+const todayKey = () => new Date().toISOString().slice(0,10);
+
+// ── AUTH ──────────────────────────────────────────────────────────────────
+document.getElementById('signInBtn').addEventListener('click', async () => {
+  try { await signInWithPopup(auth, provider); }
+  catch { document.getElementById('authError').textContent = 'Sign-in failed. Make sure pop-ups are allowed.'; }
+});
+window.signOut = async () => {
+  await fbSignOut(auth);
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('authScreen').style.display = 'flex';
+  currentUser = null;
+};
+onAuthStateChanged(auth, user => {
+  if (user) {
+    currentUser = user;
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('userAvatar').src = user.photoURL || '';
+    document.getElementById('userName').textContent = user.displayName || user.email;
+    initApp();
+  } else {
+    document.getElementById('authScreen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+
+// ── FIRESTORE ─────────────────────────────────────────────────────────────
+const userDoc = path => doc(db, 'users', currentUser.uid, ...path.split('/'));
+async function fsGet(path, fallback) {
+  try { const s = await getDoc(userDoc(path)); return s.exists() ? s.data() : fallback; } catch { return fallback; }
+}
+async function fsSet(path, data) {
+  try { await setDoc(userDoc(path), data, { merge:true }); } catch(e) { console.error(e); }
+}
+
+// ── THEME ─────────────────────────────────────────────────────────────────
+window.toggleThemeMenu = () => document.getElementById('themeDropdown').classList.toggle('open');
+document.addEventListener('click', e => { if (!e.target.closest('.theme-wrap')) document.getElementById('themeDropdown').classList.remove('open'); });
+window.setTheme = async (theme) => {
+  document.documentElement.setAttribute('data-theme', theme === 'default' ? '' : theme);
+  document.querySelectorAll('.theme-option').forEach(o => o.classList.toggle('active', o.dataset.theme === theme));
+  document.getElementById('themeDropdown').classList.remove('open');
+  await fsSet('settings/theme', { theme });
+};
+
+// ── PAGE NAV ──────────────────────────────────────────────────────────────
+window.showPage = (page) => {
+  document.getElementById('lifePage').style.display = page==='life' ? '' : 'none';
+  document.getElementById('mediaPage').style.display = page==='media' ? '' : 'none';
+  document.querySelectorAll('.nav-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&page==='life')||(i===1&&page==='media')));
+  if (page==='media') renderMedia();
+};
+
+// ── CLOCK ─────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date(), h = now.getHours(), mins = now.getMinutes().toString().padStart(2,'0');
+  const ampm = h>=12?'pm':'am', h12=h%12||12;
+  document.getElementById('clock').textContent = `${h12}:${mins} ${ampm}`;
+  document.getElementById('greeting').innerHTML = `Good <em>${h<12?'morning':h<17?'afternoon':'evening'}</em>`;
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('dateDisplay').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+}
+updateClock(); setInterval(updateClock, 10000);
+
+// ── WEATHER ───────────────────────────────────────────────────────────────
+const WX_ICONS={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',51:'🌦️',61:'🌧️',71:'🌨️',80:'🌦️',95:'⛈️'};
+const WX_DESC={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',51:'Drizzle',61:'Rain',71:'Snow',80:'Showers',95:'Thunderstorm'};
+
+function weatherSearchHtml() {
+  return `<div class="weather-search"><input class="weather-input" id="weatherSearchInput" placeholder="Search city…" onkeydown="if(event.key==='Enter')searchWeatherLocation()" /><button class="btn-ghost" onclick="searchWeatherLocation()">Go</button></div>`;
+}
+async function fetchWeatherCoords(lat, lon, locationName) {
+  const bar = document.getElementById('weatherBar');
+  try {
+    const data = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=celsius&windspeed_unit=mph&timezone=auto`).then(r=>r.json());
+    const cw = data.current_weather, code = cw.weathercode;
+    const icon = WX_ICONS[code]||'🌡️', desc = WX_DESC[code]||'';
+    const tempC = Math.round(cw.temperature), tempF = Math.round(tempC*9/5+32), wind = Math.round(cw.windspeed);
+    bar.innerHTML = `<span style="font-size:24px;">${icon}</span><span class="weather-temp">${tempC}°C / ${tempF}°F</span><span style="flex:1;">${desc}</span><span class="weather-loc">${locationName}</span><span style="font-size:13px;color:var(--text3);">Wind ${wind} mph</span>${weatherSearchHtml()}`;
+  } catch {
+    bar.innerHTML = `<span style="color:var(--text3);font-style:italic;">Weather unavailable.</span>${weatherSearchHtml()}`;
+  }
+}
+async function loadWeather() {
+  document.getElementById('weatherBar').innerHTML = `<span style="color:var(--text3);font-style:italic;">Locating…</span>`;
+  try {
+    const pos = await new Promise((res,rej) => navigator.geolocation.getCurrentPosition(res,rej,{timeout:6000}));
+    await fetchWeatherCoords(pos.coords.latitude, pos.coords.longitude, 'Current location');
+  } catch {
+    document.getElementById('weatherBar').innerHTML = `<span style="color:var(--text3);font-style:italic;">Location unavailable — search a city below.</span>${weatherSearchHtml()}`;
+  }
+}
+window.searchWeatherLocation = async () => {
+  const inp = document.getElementById('weatherSearchInput'); if (!inp) return;
+  const query = inp.value.trim(); if (!query) return;
+  document.getElementById('weatherBar').innerHTML = `<span style="color:var(--text3);font-style:italic;">Searching "${query}"…</span>`;
+  try {
+    const geo = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`).then(r=>r.json());
+    if (!geo.results?.length) { document.getElementById('weatherBar').innerHTML = `<span style="color:var(--red);">Location not found.</span>${weatherSearchHtml()}`; return; }
+    const r = geo.results[0];
+    await fetchWeatherCoords(r.latitude, r.longitude, `${r.name}${r.country_code?', '+r.country_code:''}`);
+  } catch { document.getElementById('weatherBar').innerHTML = `<span style="color:var(--red);">Search failed.</span>${weatherSearchHtml()}`; }
+};
+
+// ── CALENDAR ──────────────────────────────────────────────────────────────
+function renderCalendar() {
+  const year = calViewDate.getFullYear(), month = calViewDate.getMonth();
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('calMonthLabel').textContent = `${months[month]} ${year}`;
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const today = todayKey(), selected = viewingDay || today;
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = ['Su','Mo','Tu','We','Th','Fr','Sa'].map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  for (let i=0;i<firstDay;i++) grid.innerHTML += `<div class="cal-day empty other-month"></div>`;
+  for (let d=1;d<=daysInMonth;d++) {
+    const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    let cls = 'cal-day';
+    if (ds===today) cls+=' today';
+    if (ds===selected) cls+=' selected';
+    if (knownDates.has(ds)) cls+=' has-entry';
+    grid.innerHTML += `<div class="${cls}" onclick="switchDay('${ds}')">${d}</div>`;
+  }
+}
+window.calPrevMonth = () => { calViewDate.setMonth(calViewDate.getMonth()-1); renderCalendar(); };
+window.calNextMonth = () => { calViewDate.setMonth(calViewDate.getMonth()+1); renderCalendar(); };
+
+async function loadKnownDates() {
+  try {
+    const snap = await getDocs(collection(db, 'users', currentUser.uid, 'days'));
+    knownDates = new Set(snap.docs.map(d=>d.id));
+    renderCalendar();
+  } catch {}
+}
+
+function formatDate(ds) {
+  return new Date(ds+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+}
+async function switchDay(date) {
+  const today = todayKey();
+  viewingDay = date===today ? null : date;
+  const banner = document.getElementById('viewingBanner');
+  const none = document.getElementById('viewingNone');
+  const grid = document.getElementById('mainGrid');
+  if (viewingDay) {
+    banner.style.display='flex'; none.style.display='none';
+    document.getElementById('viewingDate').textContent = formatDate(date);
+    grid.classList.add('readonly-mode');
+  } else {
+    banner.style.display='none'; none.style.display='flex';
+    grid.classList.remove('readonly-mode');
+  }
+  await loadDayData(date);
+  renderCalendar();
+}
+window.goToToday = () => { calViewDate=new Date(); switchDay(todayKey()); };
+window.switchDay = switchDay;
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+async function initApp() {
+  renderCalendar();
+  loadWeather();
+  await loadGlobalSettings();
+  await loadDayData(todayKey());
+  await loadKnownDates();
+  await loadMediaItems();
+}
+
+async function loadGlobalSettings() {
+  const hd = await fsGet('settings/habits',{defs:['Morning walk','Read 20 min','8 glasses of water']});
+  habitDefs = hd.defs;
+  const cg = await fsGet('settings/calGoal',{goal:2000});
+  calGoal = cg.goal;
+  document.getElementById('calGoalDisplay').textContent = `${calGoal} kcal`;
+  const lk = await fsGet('settings/links',{items:[
+    {label:'Gmail',url:'https://mail.google.com',emoji:'📧'},
+    {label:'Calendar',url:'https://calendar.google.com',emoji:'📅'},
+    {label:'GitHub',url:'https://github.com',emoji:'🐙'},
+    {label:'YouTube',url:'https://youtube.com',emoji:'▶️'},
+  ]});
+  links=lk.items; renderLinks();
+  const nt = await fsGet('settings/notes',{text:''});
+  document.getElementById('notesText').value = nt.text;
+  document.getElementById('notesText').addEventListener('input', debounce(()=>{
+    fsSet('settings/notes',{text:document.getElementById('notesText').value});
+  },1000));
+  const th = await fsGet('settings/theme',{theme:'default'});
+  setTheme(th.theme||'default');
+}
+
+async function loadDayData(date) {
+  const data = await fsGet(`days/${date}`,{});
+  document.getElementById('journalText').value = data.journal||'';
+  setSyncStatus('journalDot','journalStatus','synced','Synced');
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('active',b.dataset.mood===(data.mood||null)));
+  renderHabits(data.habitDone||[]);
+  renderFood(data.food||[]);
+}
+
+// ── JOURNAL ───────────────────────────────────────────────────────────────
+document.getElementById('journalText').addEventListener('input',()=>{
+  if (viewingDay) return;
+  setSyncStatus('journalDot','journalStatus','syncing','Saving…');
+  clearTimeout(saveTimer.journal);
+  saveTimer.journal = setTimeout(async()=>{
+    await fsSet(`days/${todayKey()}`,{journal:document.getElementById('journalText').value});
+    setSyncStatus('journalDot','journalStatus','synced','Saved to cloud');
+    knownDates.add(todayKey()); renderCalendar();
+  },1000);
+});
+
+// ── MOOD ──────────────────────────────────────────────────────────────────
+window.setMood = async(mood)=>{
+  if (viewingDay) return;
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.toggle('active',b.dataset.mood===mood));
+  await fsSet(`days/${todayKey()}`,{mood});
+  knownDates.add(todayKey()); renderCalendar();
+};
+
+// ── HABITS ────────────────────────────────────────────────────────────────
+function renderHabits(done) {
+  const list=document.getElementById('habitList'); list.innerHTML='';
+  habitDefs.forEach((name,i)=>{
+    const isDone=done.includes(i), row=document.createElement('div'); row.className='habit-row';
+    row.innerHTML=`<div class="habit-box ${isDone?'done':''}"><span class="habit-check-icon">✓</span></div><span class="habit-name ${isDone?'done':''}">${name}</span><button style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;padding:2px 4px;" onclick="deleteHabit(${i})">×</button>`;
+    row.querySelector('.habit-box').addEventListener('click',()=>toggleHabit(i,done));
+    row.querySelector('.habit-name').addEventListener('click',()=>toggleHabit(i,done));
+    list.appendChild(row);
+  });
+}
+async function toggleHabit(i,done){
+  if (viewingDay) return;
+  const newDone=done.includes(i)?done.filter(x=>x!==i):[...done,i];
+  renderHabits(newDone); await fsSet(`days/${todayKey()}`,{habitDone:newDone});
+}
+window.addHabit=async()=>{
+  const inp=document.getElementById('habitInput'),name=inp.value.trim(); if(!name)return;
+  habitDefs.push(name); await fsSet('settings/habits',{defs:habitDefs}); inp.value='';
+  const data=await fsGet(`days/${todayKey()}`,{}); renderHabits(data.habitDone||[]);
+};
+window.deleteHabit=async(i)=>{
+  habitDefs.splice(i,1); await fsSet('settings/habits',{defs:habitDefs});
+  const data=await fsGet(`days/${todayKey()}`,{});
+  const done=(data.habitDone||[]).filter(x=>x!==i).map(x=>x>i?x-1:x);
+  await fsSet(`days/${todayKey()}`,{habitDone:done}); renderHabits(done);
+};
+
+// ── FOOD ──────────────────────────────────────────────────────────────────
+function renderFood(items){
+  const list=document.getElementById('foodList'); list.innerHTML='';
+  if(!items.length){list.innerHTML='<li class="food-empty">Nothing logged yet.</li>';}
+  else items.forEach((item,i)=>{
+    const li=document.createElement('li'); li.className='food-item';
+    li.innerHTML=`<span class="food-name">${item.name}</span><span class="food-kcal">${item.cal} kcal</span><button class="food-del" onclick="removeFood(${i})">×</button>`;
+    list.appendChild(li);
+  });
+  const total=items.reduce((s,x)=>s+x.cal,0);
+  document.getElementById('calEaten').textContent=total;
+  const bar=document.getElementById('calBarFill');
+  bar.style.width=Math.min((total/calGoal)*100,100)+'%';
+  bar.classList.toggle('over',total>calGoal);
+}
+window.addFood=async()=>{
+  if(viewingDay)return;
+  const name=document.getElementById('foodNameInput').value.trim();
+  const cal=parseInt(document.getElementById('foodCalInput').value);
+  if(!name||isNaN(cal))return;
+  const data=await fsGet(`days/${todayKey()}`,{}),food=[...(data.food||[]),{name,cal}];
+  await fsSet(`days/${todayKey()}`,{food});
+  document.getElementById('foodNameInput').value=''; document.getElementById('foodCalInput').value='';
+  renderFood(food); knownDates.add(todayKey()); renderCalendar();
+};
+window.removeFood=async(i)=>{
+  if(viewingDay)return;
+  const data=await fsGet(`days/${todayKey()}`,{}),food=[...(data.food||[])]; food.splice(i,1);
+  await fsSet(`days/${todayKey()}`,{food}); renderFood(food);
+};
+window.editCalGoal=async()=>{
+  if(viewingDay)return;
+  const val=prompt('Set your daily calorie goal:',calGoal),n=parseInt(val);
+  if(!isNaN(n)&&n>0){calGoal=n;await fsSet('settings/calGoal',{goal:calGoal});document.getElementById('calGoalDisplay').textContent=`${calGoal} kcal`;const data=await fsGet(`days/${todayKey()}`,{});renderFood(data.food||[]);}
+};
+document.getElementById('foodCalInput').addEventListener('keydown',e=>{if(e.key==='Enter')window.addFood();});
+document.getElementById('foodNameInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('foodCalInput').focus();});
+
+// ── LINKS ─────────────────────────────────────────────────────────────────
+function renderLinks(){
+  const grid=document.getElementById('linksGrid'); grid.innerHTML='';
+  links.forEach((lnk,i)=>{
+    const chip=document.createElement('div'); chip.className='link-chip';
+    chip.innerHTML=`<span class="link-icon">${lnk.emoji||'🔗'}</span><span>${lnk.label}</span><button class="link-del" onclick="removeLink(event,${i})">×</button>`;
+    chip.addEventListener('click',e=>{if(e.target.classList.contains('link-del'))return;window.open(lnk.url,'_blank');});
+    grid.appendChild(chip);
+  });
+}
+window.addLink=async()=>{
+  const label=document.getElementById('linkLabel').value.trim();
+  const url=document.getElementById('linkUrl').value.trim();
+  const emoji=document.getElementById('linkEmoji').value.trim()||'🔗';
+  if(!label||!url)return;
+  links.push({label,url,emoji}); await fsSet('settings/links',{items:links});
+  document.getElementById('linkLabel').value='';document.getElementById('linkUrl').value='';document.getElementById('linkEmoji').value='';
+  renderLinks();
+};
+window.removeLink=async(e,i)=>{e.stopPropagation();links.splice(i,1);await fsSet('settings/links',{items:links});renderLinks();};
+document.getElementById('linkUrl').addEventListener('keydown',e=>{if(e.key==='Enter')window.addLink();});
+
+// ── MEDIA ─────────────────────────────────────────────────────────────────
+async function loadMediaItems(){
+  const data=await fsGet('settings/media',{items:[]});
+  mediaItems=data.items||[]; updateYearFilter(); renderMedia();
+}
+async function saveMediaItems(){ await fsSet('settings/media',{items:mediaItems}); }
+
+window.switchMediaTab=(tab)=>{
+  currentMediaTab=tab;
+  const tabs=['books','movies','tv','games'];
+  document.querySelectorAll('.media-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===tab));
+  renderMedia();
+};
+
+function updateYearFilter(){
+  const years=[...new Set(mediaItems.map(i=>i.year).filter(Boolean))].sort().reverse();
+  const sel=document.getElementById('mediaYearFilter'), cur=sel.value;
+  sel.innerHTML='<option value="all">All years</option>'+years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  if(years.includes(parseInt(cur)))sel.value=cur;
+}
+
+function starsHtml(n){ return n>0?'★'.repeat(n)+'☆'.repeat(5-n):''; }
+
+function renderMedia(){
+  const yearFilter=document.getElementById('mediaYearFilter').value;
+  const filtered=mediaItems.filter(i=>{
+    if(i.type!==currentMediaTab)return false;
+    if(yearFilter!=='all'&&String(i.year)!==yearFilter)return false;
+    return true;
+  });
+  const all=mediaItems.filter(i=>i.type===currentMediaTab);
+  const completed=all.filter(i=>i.status==='completed').length;
+  const inProg=all.filter(i=>i.status==='in-progress').length;
+  const wantTo=all.filter(i=>i.status==='want-to').length;
+  const rated=all.filter(i=>i.rating>0);
+  const avg=rated.length?(rated.reduce((s,i)=>s+i.rating,0)/rated.length).toFixed(1):'—';
+  document.getElementById('mediaStats').innerHTML=`
+    <div class="media-stat"><div class="media-stat-num">${completed}</div><div class="media-stat-lbl">Completed</div></div>
+    <div class="media-stat"><div class="media-stat-num">${inProg}</div><div class="media-stat-lbl">In progress</div></div>
+    <div class="media-stat"><div class="media-stat-num">${wantTo}</div><div class="media-stat-lbl">Want to</div></div>
+    <div class="media-stat"><div class="media-stat-num">${avg}</div><div class="media-stat-lbl">Avg rating</div></div>`;
+  const grid=document.getElementById('mediaGrid'); grid.innerHTML='';
+  if(!filtered.length){grid.innerHTML='<div class="media-empty">Nothing here yet — add something above.</div>';return;}
+  filtered.slice().reverse().forEach(item=>{
+    const realIdx=mediaItems.indexOf(item), card=document.createElement('div'); card.className='media-card';
+    const statusLabel=item.status==='completed'?'Completed':item.status==='in-progress'?'In progress':'Want to';
+    card.innerHTML=`
+      <div class="media-card-title">${item.title}</div>
+      <div class="media-card-meta">${[item.creator,item.year].filter(Boolean).join(' · ')}</div>
+      <span class="media-card-status status-${item.status}">${statusLabel}</span>
+      ${item.rating>0?`<div class="media-stars">${starsHtml(item.rating)}</div>`:''}
+      ${item.thoughts?`<div class="media-thoughts">${item.thoughts}</div>`:''}
+      <button class="media-del-btn" onclick="deleteMedia(${realIdx})">×</button>`;
+    grid.appendChild(card);
+  });
+}
+window.addMedia=async()=>{
+  const title=document.getElementById('mediaTitle').value.trim(); if(!title)return;
+  mediaItems.push({
+    type:currentMediaTab, title,
+    creator:document.getElementById('mediaCreator').value.trim(),
+    year:parseInt(document.getElementById('mediaYear').value)||new Date().getFullYear(),
+    status:document.getElementById('mediaStatus').value,
+    rating:parseInt(document.getElementById('mediaRating').value)||0,
+    thoughts:document.getElementById('mediaThoughts').value.trim(),
+    addedAt:Date.now()
+  });
+  await saveMediaItems();
+  ['mediaTitle','mediaCreator','mediaYear','mediaThoughts'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mediaStatus').value='completed';
+  document.getElementById('mediaRating').value='0';
+  updateYearFilter(); renderMedia();
+};
+window.deleteMedia=async(i)=>{
+  if(!confirm('Remove this entry?'))return;
+  mediaItems.splice(i,1); await saveMediaItems(); updateYearFilter(); renderMedia();
+};
+
+// ── UTILS ─────────────────────────────────────────────────────────────────
+function setSyncStatus(dotId,labelId,state,text){
+  document.getElementById(dotId).className='sync-dot '+state;
+  document.getElementById(labelId).textContent=text;
+}
+function debounce(fn,ms){let t;return(...args)=>{clearTimeout(t);t=setTimeout(()=>fn(...args),ms);};}
+
+</script>
+</body>
+</html>
