@@ -328,6 +328,10 @@ body{font-family:var(--theme-font,var(--sans));background:var(--bg);color:var(--
 .now-card-del{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:15px;opacity:0;transition:opacity 0.15s;}
 .now-card:hover .now-card-del{opacity:1;}
 .now-card-del:hover{color:var(--red);}
+.now-card-thoughts{width:100%;min-height:70px;resize:vertical;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-family:var(--header-font,var(--serif));font-size:13px;line-height:1.6;color:var(--text);background:var(--bg2);outline:none;margin-top:6px;}
+.now-card-thoughts:focus{border-color:var(--border2);}
+.now-card-thoughts::placeholder{color:var(--text3);font-style:italic;}
+.now-card-sync{font-size:10px;color:var(--text3);margin-top:3px;display:flex;align-items:center;gap:4px;}
 .now-add-bar{display:flex;flex-direction:column;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;}
 .now-add-bar input,.now-add-bar select{padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none;width:100%;}
 .now-add-bar input:focus,.now-add-bar select:focus{border-color:var(--border2);}
@@ -338,9 +342,9 @@ body{font-family:var(--theme-font,var(--sans));background:var(--bg);color:var(--
 /* RIGHT: library */
 .media-col-right{}
 .media-stats-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
-.media-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;text-align:center;flex:1;min-width:60px;}
-.media-stat-num{font-family:var(--header-font,var(--serif));font-size:20px;color:var(--text);}
-.media-stat-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;}
+.media-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;text-align:center;flex:1;min-width:55px;overflow:hidden;}
+.media-stat-num{font-family:var(--header-font,var(--serif));font-size:18px;color:var(--text);line-height:1.2;}
+.media-stat-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .rating-chart-toggle{font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:var(--sans);text-decoration:underline;padding:0;margin-bottom:6px;}
 .rating-chart{background:var(--bg2);border-radius:var(--radius-sm);padding:10px 12px;display:none;margin-bottom:10px;}
 .rating-chart.open{display:block;}
@@ -622,14 +626,8 @@ body{font-family:var(--theme-font,var(--sans));background:var(--bg);color:var(--
             <option value="tv">📺 TV</option>
             <option value="games">🎮 Game</option>
           </select>
-          <input type="text" id="nowConsumingCover" placeholder="Cover URL (optional)"/>
+          <input type="text" id="nowConsumingCover" placeholder="Cover image URL (optional)"/>
           <button class="btn-add" onclick="addNowConsuming()">Add</button>
-        </div>
-        <!-- Daily journal for now-consuming -->
-        <div class="now-journal-section" id="nowJournalSection" style="display:none;">
-          <div class="media-section-label" style="margin-top:16px;" id="nowJournalLabel">Daily thoughts</div>
-          <textarea class="now-journal-area" id="nowJournalText" placeholder="Write your thoughts on what you're consuming today…"></textarea>
-          <div class="sync-status"><span class="sync-dot" id="nowJournalDot"></span><span id="nowJournalStatus">—</span></div>
         </div>
       </div>
 
@@ -645,7 +643,17 @@ body{font-family:var(--theme-font,var(--sans));background:var(--bg);color:var(--
         <!-- Add form -->
         <div class="media-add-bar">
           <div class="media-add-title">Add to library</div>
-          <div class="mf" style="width:100%;"><label>Title</label><input type="text" id="mediaTitle" placeholder="Title…"/></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div class="mf" style="flex:1;min-width:140px;"><label>Title</label><input type="text" id="mediaTitle" placeholder="Title…"/></div>
+            <div class="mf" style="width:100px;"><label>Type</label>
+              <select id="mediaType">
+                <option value="books">📚 Book</option>
+                <option value="movies">🎬 Movie</option>
+                <option value="tv">📺 TV</option>
+                <option value="games">🎮 Game</option>
+              </select>
+            </div>
+          </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <div class="mf" style="flex:1;min-width:120px;"><label>Creator</label><input type="text" id="mediaCreator" placeholder="Author / Director…"/></div>
             <div class="mf" style="width:72px;"><label>Year</label><input type="number" id="mediaYear" placeholder="2024"/></div>
@@ -1104,67 +1112,88 @@ window.addLink=async()=>{
 window.removeLink=async(e,i)=>{e.stopPropagation();links.splice(i,1);await fsSet('settings/links',{items:links});renderLinks();};
 document.getElementById('linkUrl').addEventListener('keydown',e=>{if(e.key==='Enter')window.addLink();});
 
-// ── NOW CONSUMING (multi-item, per-day, categorised) ──────────────────────
-let nowSaveTimer;
+// ── NOW CONSUMING (multi-item, per-day, per-card thoughts) ────────────────
+const nowThoughtsTimers={};
+
 async function loadNowConsuming(date){
   const data=await fsGet(`days/${date}`,{});
-  renderNowCards(data.nowConsuming||[]);
-  // Show journal if there are now-items
-  const hasItems=(data.nowConsuming||[]).length>0;
-  document.getElementById('nowJournalSection').style.display=hasItems?'block':'none';
-  document.getElementById('nowJournalText').value=data.nowJournal||'';
-  setSyncStatus('nowJournalDot','nowJournalStatus','synced',hasItems?'Synced':'—');
+  // Sanitize: old data might be a string or contain invalid entries
+  let raw=data.nowConsuming||[];
+  if(!Array.isArray(raw)) raw=[];
+  const items=raw.filter(i=>i&&typeof i==='object'&&typeof i.title==='string'&&i.title.trim());
+  renderNowCards(items,date);
 }
-function renderNowCards(items){
+
+function renderNowCards(items,date){
   const container=document.getElementById('nowConsumingCards');
   if(!items||!items.length){
     container.innerHTML='<div class="now-empty">Nothing added yet — add something below.</div>';
-    document.getElementById('nowJournalSection').style.display='none';
     return;
   }
   container.innerHTML='';
   items.forEach((item,i)=>{
-    const typeLabel={'books':'📚 Book','movies':'🎬 Movie','tv':'📺 TV','games':'🎮 Game'}[item.type]||item.type;
+    const typeLabel={'books':'📚 Book','movies':'🎬 Movie','tv':'📺 TV','games':'🎮 Game'}[item.type]||'📌 Media';
     const card=document.createElement('div');card.className='now-card';
     const coverHtml=item.cover
-      ?`<div class="now-card-cover"><img src="${item.cover}" alt="" onerror="this.style.display='none'"/></div>`
+      ?`<div class="now-card-cover"><img src="${item.cover}" alt="" onerror="this.parentElement.textContent='${coverEmoji(item.type)}'"/></div>`
       :`<div class="now-card-cover">${coverEmoji(item.type)}</div>`;
-    card.innerHTML=`${coverHtml}<div class="now-card-body"><div class="now-card-type">${typeLabel}</div><div class="now-card-title">${item.title}</div>${item.creator?`<div class="now-card-creator">${item.creator}</div>`:''}</div><button class="now-card-del" onclick="removeNowItem(${i})">×</button>`;
+    card.innerHTML=`
+      ${coverHtml}
+      <div class="now-card-body">
+        <div class="now-card-type">${typeLabel}</div>
+        <div class="now-card-title">${item.title}</div>
+        ${item.creator?`<div class="now-card-creator">${item.creator}</div>`:''}
+        <textarea class="now-card-thoughts" data-idx="${i}" placeholder="Thoughts on ${item.title} today…">${item.thoughts||''}</textarea>
+        <div class="now-card-sync" id="nowSync${i}"><span class="sync-dot"></span><span>—</span></div>
+      </div>
+      <button class="now-card-del" onclick="removeNowItem(${i})">×</button>`;
+    // Wire up per-card thoughts save
+    const ta=card.querySelector('textarea');
+    ta.addEventListener('input',()=>{
+      const dot=card.querySelector(`#nowSync${i} .sync-dot`);
+      const lbl=card.querySelector(`#nowSync${i} span:last-child`);
+      dot.className='sync-dot syncing';lbl.textContent='Saving…';
+      clearTimeout(nowThoughtsTimers[i]);
+      nowThoughtsTimers[i]=setTimeout(async()=>{
+        const d=await fsGet(`days/${date||activeDay()}`,{});
+        const arr=[...((d.nowConsuming||[]).filter(x=>x&&typeof x==='object'&&x.title))];
+        if(arr[i])arr[i].thoughts=ta.value;
+        await fsSet(`days/${date||activeDay()}`,{nowConsuming:arr});
+        dot.className='sync-dot synced';lbl.textContent='Saved';
+      },1000);
+    });
     container.appendChild(card);
   });
-  document.getElementById('nowJournalSection').style.display='block';
 }
+
 window.addNowConsuming=async()=>{
   const title=document.getElementById('nowConsumingTitle').value.trim();
   if(!title)return;
-  const data=await fsGet(`days/${activeDay()}`,{});
-  const items=[...(data.nowConsuming||[]),{
+  const d=await fsGet(`days/${activeDay()}`,{});
+  let existing=Array.isArray(d.nowConsuming)?d.nowConsuming:[];
+  // Filter out any corrupt/old string entries
+  existing=existing.filter(i=>i&&typeof i==='object'&&typeof i.title==='string'&&i.title.trim());
+  const items=[...existing,{
     title,
-    type:document.getElementById('nowConsumingType').value,
-    cover:document.getElementById('nowConsumingCover').value.trim(),
-    creator:''
+    type:document.getElementById('nowConsumingType').value||'books',
+    cover:(document.getElementById('nowConsumingCover').value||'').trim(),
+    creator:'',
+    thoughts:''
   }];
   await fsSet(`days/${activeDay()}`,{nowConsuming:items});
   document.getElementById('nowConsumingTitle').value='';
   document.getElementById('nowConsumingCover').value='';
-  renderNowCards(items);
-  document.getElementById('nowJournalSection').style.display='block';
+  renderNowCards(items,activeDay());
 };
+
 window.removeNowItem=async(i)=>{
-  const data=await fsGet(`days/${activeDay()}`,{});
-  const items=[...(data.nowConsuming||[])];items.splice(i,1);
+  const d=await fsGet(`days/${activeDay()}`,{});
+  let items=Array.isArray(d.nowConsuming)?d.nowConsuming:[];
+  items=items.filter(x=>x&&typeof x==='object'&&x.title);
+  items.splice(i,1);
   await fsSet(`days/${activeDay()}`,{nowConsuming:items});
-  renderNowCards(items);
-  if(!items.length)document.getElementById('nowJournalSection').style.display='none';
+  renderNowCards(items,activeDay());
 };
-document.getElementById('nowJournalText').addEventListener('input',()=>{
-  setSyncStatus('nowJournalDot','nowJournalStatus','syncing','Saving…');
-  clearTimeout(nowSaveTimer);
-  nowSaveTimer=setTimeout(async()=>{
-    await fsSet(`days/${activeDay()}`,{nowJournal:document.getElementById('nowJournalText').value});
-    setSyncStatus('nowJournalDot','nowJournalStatus','synced','Saved');
-  },1000);
-});
 
 // ── MEDIA ─────────────────────────────────────────────────────────────────
 async function loadMediaItems(){
@@ -1177,6 +1206,9 @@ window.switchMediaTab=(tab)=>{
   currentMediaTab=tab;
   const tabs=['books','movies','tv','games'];
   document.querySelectorAll('.media-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===tab));
+  // Sync the add-form type dropdown to match selected tab
+  const typeEl=document.getElementById('mediaType');
+  if(typeEl) typeEl.value=tab;
   renderMedia();renderMediaLog();
   loadNowConsuming(activeDay());
 };
@@ -1281,8 +1313,9 @@ function renderMediaLog(){
 
 window.addMedia=async()=>{
   const title=document.getElementById('mediaTitle').value.trim();if(!title)return;
+  const type=document.getElementById('mediaType').value||currentMediaTab;
   mediaItems.push({
-    type:currentMediaTab,title,
+    type,title,
     creator:document.getElementById('mediaCreator').value.trim(),
     year:parseInt(document.getElementById('mediaYear').value)||new Date().getFullYear(),
     status:document.getElementById('mediaStatus').value,
@@ -1292,8 +1325,13 @@ window.addMedia=async()=>{
     addedAt:Date.now()
   });
   await saveMediaItems();
-  ['mediaTitle','mediaCreator','mediaYear','mediaRating','mediaCover','mediaThoughts'].forEach(id=>document.getElementById(id).value='');
+  ['mediaTitle','mediaCreator','mediaYear','mediaRating','mediaCover'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mediaThoughts').value='';
   document.getElementById('mediaStatus').value='completed';
+  // Switch to the tab matching the type just added
+  currentMediaTab=type;
+  const tabs=['books','movies','tv','games'];
+  document.querySelectorAll('.media-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===type));
   updateYearFilter();renderMedia();renderMediaLog();
 };
 window.deleteMedia=async(i)=>{
