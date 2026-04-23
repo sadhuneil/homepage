@@ -430,7 +430,7 @@ body{font-family:var(--theme-font,var(--sans));background:var(--bg);color:var(--
   </div>
 
   <!-- ══ LIFE PAGE ══ -->
-  <div id="lifePage">
+  <div id="lifePage" style="display:block;">
 
     <!-- Collapsible Calendar -->
     <div class="cal-picker-card">
@@ -754,8 +754,8 @@ window.setTheme=async(theme)=>{
 
 // ── PAGE NAV ──────────────────────────────────────────────────────────────
 window.showPage=(page)=>{
-  document.getElementById('lifePage').style.display=page==='life'?'':'none';
-  document.getElementById('mediaPage').style.display=page==='media'?'':'none';
+  document.getElementById('lifePage').style.display=page==='life'?'block':'none';
+  document.getElementById('mediaPage').style.display=page==='media'?'block':'none';
   document.querySelectorAll('.nav-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&page==='life')||(i===1&&page==='media')));
   if(page==='media'){renderMedia();renderMediaLog();}
 };
@@ -772,65 +772,47 @@ function updateClock(){
 }
 updateClock(); setInterval(updateClock,10000);
 
-// ── WEATHER ───────────────────────────────────────────────────────────────
+// ── WEATHER (GPS only, click temp to toggle F/C) ──────────────────────────
 const WX_ICONS={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',51:'🌦️',61:'🌧️',71:'🌨️',80:'🌦️',95:'⛈️'};
 const WX_DESC={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',45:'Foggy',51:'Drizzle',61:'Rain',71:'Snow',80:'Showers',95:'Thunderstorm'};
 
 function tempDisplay(tempC){
-  if(weatherUseFahrenheit) return `${Math.round(tempC*9/5+32)}°F`;
-  return `${Math.round(tempC)}°C`;
-}
-window.toggleTempUnit=()=>{
-  weatherUseFahrenheit=!weatherUseFahrenheit;
-  if(lastWeatherData) renderWeather(lastWeatherData);
-};
-function weatherSearchBar(){
-  return `<div class="weather-search"><input class="weather-input" id="weatherSearchInput" placeholder="City, State (e.g. Saratoga, NY)…" onkeydown="if(event.key==='Enter')searchWeatherLocation()"/><button class="weather-loc-btn" onclick="searchWeatherLocation()">Go</button><button class="weather-loc-btn" onclick="loadWeatherGPS()" title="Use my location">📍</button></div>`;
+  return weatherUseFahrenheit?`${Math.round(tempC*9/5+32)}°F`:`${Math.round(tempC)}°C`;
 }
 function renderWeather(d){
   lastWeatherData=d;
   const code=d.weathercode,icon=WX_ICONS[code]||'🌡️',desc=WX_DESC[code]||'';
   const bar=document.getElementById('weatherBar');
-  bar.innerHTML=`<span style="font-size:22px;">${icon}</span><span class="weather-temp" onclick="toggleTempUnit()" title="Click to switch units">${tempDisplay(d.temperature)}</span><span style="flex:1;">${desc}</span><span class="weather-loc">${d.locationName}</span><span style="font-size:12px;color:var(--text3);">Wind ${Math.round(d.windspeed)} mph</span>${weatherSearchBar()}`;
-}
-async function fetchWeatherCoords(lat,lon,locationName){
-  try {
-    const data=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=celsius&windspeed_unit=mph&timezone=auto`).then(r=>r.json());
-    const cw=data.current_weather;
-    renderWeather({...cw,locationName});
-  } catch {
-    document.getElementById('weatherBar').innerHTML=`<span style="color:var(--text3);font-style:italic;">Weather unavailable.</span>${weatherSearchBar()}`;
-  }
-}
-async function loadWeatherGPS(){
-  document.getElementById('weatherBar').innerHTML=`<span style="color:var(--text3);font-style:italic;">Locating…</span>`;
-  try {
-    const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:8000}));
-    // reverse geocode to get city/state
-    const gc=await fetch(`https://geocoding-api.open-meteo.com/v1/reverse?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&language=en&format=json`).then(r=>r.json()).catch(()=>({}));
-    let name='Current location';
-    if(gc.name){name=`${gc.name}${gc.admin1?', '+gc.admin1:''}`;}
-    await fetchWeatherCoords(pos.coords.latitude,pos.coords.longitude,name);
-  } catch {
-    document.getElementById('weatherBar').innerHTML=`<span style="color:var(--text3);">Location unavailable.</span>${weatherSearchBar()}`;
-  }
+  bar.innerHTML=`<span style="font-size:22px;">${icon}</span><span id="wxTemp" class="weather-temp" title="Click to switch °F / °C">${tempDisplay(d.temperature)}</span><span style="flex:1;">${desc}</span><span class="weather-loc">${d.locationName}</span><span style="font-size:12px;color:var(--text3);">Wind ${Math.round(d.windspeed)} mph</span>`;
+  document.getElementById('wxTemp').addEventListener('click',()=>{
+    weatherUseFahrenheit=!weatherUseFahrenheit;
+    document.getElementById('wxTemp').textContent=tempDisplay(lastWeatherData.temperature);
+  });
 }
 async function loadWeather(){
-  document.getElementById('weatherBar').innerHTML=`<span style="color:var(--text3);font-style:italic;">Loading weather…</span>`;
-  await loadWeatherGPS();
-}
-window.searchWeatherLocation=async()=>{
-  const inp=document.getElementById('weatherSearchInput');if(!inp)return;
-  const query=inp.value.trim();if(!query)return;
-  document.getElementById('weatherBar').innerHTML=`<span style="color:var(--text3);font-style:italic;">Searching "${query}"…</span>`;
+  const bar=document.getElementById('weatherBar');
+  bar.innerHTML=`<span style="color:var(--text3);font-style:italic;">Detecting location…</span>`;
   try {
-    const geo=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`).then(r=>r.json());
-    if(!geo.results?.length){document.getElementById('weatherBar').innerHTML=`<span style="color:var(--red);">Location not found.</span>${weatherSearchBar()}`;return;}
-    const r=geo.results[0];
-    const name=`${r.name}${r.admin1?', '+r.admin1:''}${r.country_code&&r.country_code!=='US'?', '+r.country_code:''}`;
-    await fetchWeatherCoords(r.latitude,r.longitude,name);
-  } catch {document.getElementById('weatherBar').innerHTML=`<span style="color:var(--red);">Search failed.</span>${weatherSearchBar()}`;}
-};
+    const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:8000}));
+    const lat=pos.coords.latitude,lon=pos.coords.longitude;
+    // Reverse geocode for city/state name
+    let locationName='Current location';
+    try {
+      const gc=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`).then(r=>r.json());
+      const a=gc.address||{};
+      const city=a.city||a.town||a.village||a.hamlet||'';
+      const state=a.state||'';
+      const country=a.country_code?.toUpperCase()||'';
+      if(city&&state) locationName=`${city}, ${state}`;
+      else if(city&&country) locationName=`${city}, ${country}`;
+      else if(city) locationName=city;
+    } catch {}
+    const data=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=celsius&windspeed_unit=mph&timezone=auto`).then(r=>r.json());
+    renderWeather({...data.current_weather,locationName});
+  } catch {
+    bar.innerHTML=`<span style="color:var(--text3);">Weather unavailable — please allow location access and reload.</span>`;
+  }
+}
 
 // ── CALENDAR ──────────────────────────────────────────────────────────────
 let calOpen=false;
