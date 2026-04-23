@@ -6,7 +6,7 @@
 <title>My Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&family=Orbitron:wght@400;700&family=Ma+Shan+Zheng&family=VT323&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&family=Orbitron:wght@400;700&family=Ma+Shan+Zheng&family=VT323&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
@@ -85,6 +85,70 @@
   --accent:#8B4513;--accent-light:#F2E5D0;
   --green:#3A6A2A;--amber:#AA7010;--red:#AA2A2A;
   --serif:'Lora',serif;--header-font:'Lora',serif;
+}
+/* New themes inspired by modern web design trends */
+[data-theme="brutalist"]{
+  --bg:#F0EDE8;--bg2:#E2DDD6;--bg3:#CCC6BC;
+  --surface:#FFFFFF;--border:rgba(0,0,0,0.8);--border2:rgba(0,0,0,1);
+  --text:#000000;--text2:#333333;--text3:#666666;
+  --accent:#FF3300;--accent-light:#FFE0D9;
+  --green:#006600;--amber:#CC6600;--red:#CC0000;
+  --theme-font:'DM Sans',sans-serif;--header-font:'DM Sans',sans-serif;
+  --radius:0px;--radius-sm:0px;
+}
+[data-theme="agency"]{
+  --bg:#0A0A0A;--bg2:#111111;--bg3:#1A1A1A;
+  --surface:#111111;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.14);
+  --text:#F5F5F5;--text2:#A0A0A0;--text3:#555555;
+  --accent:#E8FF00;--accent-light:rgba(232,255,0,0.1);
+  --green:#00FF88;--amber:#FF9900;--red:#FF3344;
+  --theme-font:'DM Sans',sans-serif;--header-font:'DM Sans',sans-serif;
+}
+[data-theme="editorial"]{
+  --bg:#FAFAF8;--bg2:#F0EFE9;--bg3:#E4E3DB;
+  --surface:#FFFFFF;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.18);
+  --text:#111111;--text2:#555555;--text3:#999999;
+  --accent:#111111;--accent-light:#F0EFE9;
+  --green:#2A6A2A;--amber:#8A5A00;--red:#AA2200;
+  --header-font:'Lora',serif;
+}
+[data-theme="luxury"]{
+  --bg:#0C0B08;--bg2:#141210;--bg3:#1C1916;
+  --surface:#141210;--border:rgba(212,175,55,0.2);--border2:rgba(212,175,55,0.45);
+  --text:#F5EDD0;--text2:#C8B880;--text3:#806040;
+  --accent:#D4AF37;--accent-light:rgba(212,175,55,0.12);
+  --green:#4A8A4A;--amber:#D4AF37;--red:#AA3333;
+  --header-font:'Lora',serif;
+}
+[data-theme="nordic"]{
+  --bg:#E8EBF0;--bg2:#D8DCE8;--bg3:#C8CDD8;
+  --surface:#F2F4F8;--border:rgba(40,60,100,0.1);--border2:rgba(40,60,100,0.22);
+  --text:#1A2035;--text2:#445070;--text3:#8090B0;
+  --accent:#2255CC;--accent-light:#DDE6FF;
+  --green:#1A7A4A;--amber:#8A6020;--red:#AA2222;
+}
+[data-theme="warm-dark"]{
+  --bg:#1A1410;--bg2:#221C16;--bg3:#2C241C;
+  --surface:#221C16;--border:rgba(200,150,80,0.15);--border2:rgba(200,150,80,0.3);
+  --text:#F0E0C0;--text2:#B09060;--text3:#705030;
+  --accent:#E8A040;--accent-light:rgba(232,160,64,0.12);
+  --green:#5A8A40;--amber:#E8A040;--red:#CC4040;
+  --header-font:'Lora',serif;
+}
+[data-theme="mint"]{
+  --bg:#EEF8F4;--bg2:#DFF2EA;--bg3:#CCE8DC;
+  --surface:#F6FCF9;--border:rgba(20,120,80,0.12);--border2:rgba(20,120,80,0.25);
+  --text:#0A2818;--text2:#2A6040;--text3:#6A9A80;
+  --accent:#0E8055;--accent-light:#D5F0E5;
+  --green:#0E8055;--amber:#8A6800;--red:#AA2A2A;
+}
+[data-theme="vapor"]{
+  --bg:#1A0830;--bg2:#220C40;--bg3:#2C1055;
+  --surface:#220C40;--border:rgba(200,100,255,0.2);--border2:rgba(200,100,255,0.4);
+  --text:#F0D0FF;--text2:#C090EE;--text3:#805090;
+  --accent:#FF80FF;--accent-light:rgba(255,128,255,0.1);
+  --green:#60FF90;--amber:#FFCC44;--red:#FF4466;
+  --header-font:'Lora',serif;
 }
 
 body{font-family:var(--theme-font,var(--sans));background:var(--bg);color:var(--text);min-height:100vh;transition:background 0.3s,color 0.3s;}
@@ -359,8 +423,8 @@ body{font-family:var(--theme-font,var(--sans));background:var(--bg);color:var(--
 .media-add-title{font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px;}
 .mf{display:flex;flex-direction:column;gap:4px;}
 .mf label{font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);}
-.mf input,.mf select,.mf textarea{padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none;width:100%;}
-.mf input:focus,.mf select:focus,.mf textarea:focus{border-color:var(--border2);}
+.mf input,.mf select,.mf textarea{padding:7px 10px;font-size:13px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none;width:100%;}
+.mf input:focus,.mf select:focus,.mf textarea:focus{border-color:var(--accent);}
 
 /* Library grid — Letterboxd-style tall cards */
 .media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;}
@@ -449,6 +513,15 @@ body{font-family:var(--theme-font,var(--sans));background:var(--bg);color:var(--
           <button class="theme-option" data-theme="retro" onclick="setTheme('retro')"><span class="theme-swatch" style="background:#1A0A00;border-color:#FF8C00;"></span>Retro Terminal</button>
           <button class="theme-option" data-theme="cyberpunk" onclick="setTheme('cyberpunk')"><span class="theme-swatch" style="background:#06000F;border-color:#FF00CC;"></span>Cyberpunk</button>
           <button class="theme-option" data-theme="chinese" onclick="setTheme('chinese')"><span class="theme-swatch" style="background:#FFF8F0;border-color:#CC2200;"></span>Chinese Classical</button>
+          <button class="theme-option" data-theme="vapor" onclick="setTheme('vapor')"><span class="theme-swatch" style="background:#1A0830;border-color:#FF80FF;"></span>Vaporwave</button>
+          <div class="theme-section-label">Design</div>
+          <button class="theme-option" data-theme="brutalist" onclick="setTheme('brutalist')"><span class="theme-swatch" style="background:#F0EDE8;border:2px solid #000;"></span>Brutalist</button>
+          <button class="theme-option" data-theme="agency" onclick="setTheme('agency')"><span class="theme-swatch" style="background:#0A0A0A;border-color:#E8FF00;"></span>Dark Agency</button>
+          <button class="theme-option" data-theme="editorial" onclick="setTheme('editorial')"><span class="theme-swatch" style="background:#FAFAF8;border-color:#333;"></span>Editorial</button>
+          <button class="theme-option" data-theme="luxury" onclick="setTheme('luxury')"><span class="theme-swatch" style="background:#0C0B08;border-color:#D4AF37;"></span>Luxury Gold</button>
+          <button class="theme-option" data-theme="nordic" onclick="setTheme('nordic')"><span class="theme-swatch" style="background:#E8EBF0;border-color:#2255CC;"></span>Nordic Blue</button>
+          <button class="theme-option" data-theme="warm-dark" onclick="setTheme('warm-dark')"><span class="theme-swatch" style="background:#1A1410;border-color:#E8A040;"></span>Warm Dark</button>
+          <button class="theme-option" data-theme="mint" onclick="setTheme('mint')"><span class="theme-swatch" style="background:#EEF8F4;border-color:#0E8055;"></span>Mint Fresh</button>
         </div>
       </div>
     </div>
@@ -615,20 +688,11 @@ body{font-family:var(--theme-font,var(--sans));background:var(--bg);color:var(--
 
       <!-- MIDDLE: Now consuming -->
       <div class="media-col-mid">
-        <div class="media-section-label">Now playing / watching / reading</div>
-        <div id="nowConsumingCards"></div>
-        <!-- Add now-consuming item -->
-        <div class="now-add-bar">
-          <input type="text" id="nowConsumingTitle" placeholder="Title…"/>
-          <select id="nowConsumingType">
-            <option value="books">📚 Book</option>
-            <option value="movies">🎬 Movie</option>
-            <option value="tv">📺 TV</option>
-            <option value="games">🎮 Game</option>
-          </select>
-          <input type="text" id="nowConsumingCover" placeholder="Cover image URL (optional)"/>
-          <button class="btn-add" onclick="addNowConsuming()">Add</button>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+          <div class="media-section-label" style="margin-bottom:0;">Now playing / watching / reading</div>
+          <button class="btn-add" style="font-size:12px;padding:5px 12px;" onclick="openNowPlayingModal()">+ Add</button>
         </div>
+        <div id="nowConsumingCards"></div>
       </div>
 
       <!-- RIGHT: Library + add form -->
@@ -682,6 +746,71 @@ body{font-family:var(--theme-font,var(--sans));background:var(--bg);color:var(--
   </div><!-- /mediaPage -->
 
 </div>
+</div>
+
+<!-- Now Playing Modal -->
+<div class="suggestion-overlay" id="nowPlayingOverlay" onclick="closeNowPlayingIfBg(event)">
+  <div class="suggestion-modal" style="width:460px;">
+    <h3>Now playing / watching / reading</h3>
+    <p>What are you currently consuming? Add as many as you like.</p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+      <input type="text" id="nowConsumingTitle" class="suggestion-textarea" style="min-height:0;height:40px;resize:none;" placeholder="Title…" onkeydown="if(event.key==='Enter')addNowConsuming()"/>
+      <div style="display:flex;gap:8px;">
+        <select id="nowConsumingType" style="flex:1;padding:8px 10px;font-size:13px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none;">
+          <option value="books">📚 Book</option>
+          <option value="movies">🎬 Movie</option>
+          <option value="tv">📺 TV</option>
+          <option value="games">🎮 Game</option>
+        </select>
+        <input type="text" id="nowConsumingCover" style="flex:1.5;padding:8px 10px;font-size:13px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none;" placeholder="Cover image URL (optional)"/>
+      </div>
+    </div>
+    <div class="suggestion-actions">
+      <button class="btn-ghost" onclick="closeNowPlayingModal()">Cancel</button>
+      <button class="btn-add" onclick="addNowConsuming()">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Media Modal -->
+<div class="suggestion-overlay" id="editMediaOverlay" onclick="closeEditMediaIfBg(event)">
+  <div class="suggestion-modal" style="width:500px;">
+    <h3>Edit entry</h3>
+    <input type="hidden" id="editMediaIdx"/>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px;">
+      <div style="display:flex;gap:8px;">
+        <div class="mf" style="flex:1;"><label>Title</label><input type="text" id="editMediaTitle"/></div>
+        <div class="mf" style="width:100px;"><label>Type</label>
+          <select id="editMediaType">
+            <option value="books">📚 Book</option>
+            <option value="movies">🎬 Movie</option>
+            <option value="tv">📺 TV</option>
+            <option value="games">🎮 Game</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div class="mf" style="flex:1;"><label>Creator</label><input type="text" id="editMediaCreator"/></div>
+        <div class="mf" style="width:76px;"><label>Year</label><input type="number" id="editMediaYear"/></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div class="mf" style="flex:1;"><label>Status</label>
+          <select id="editMediaStatus">
+            <option value="completed">Completed</option>
+            <option value="in-progress">In progress</option>
+            <option value="want-to">Want to</option>
+          </select>
+        </div>
+        <div class="mf" style="width:80px;"><label>Rating /10</label><input type="number" id="editMediaRating" min="0" max="10" step="0.5"/></div>
+      </div>
+      <div class="mf"><label>Cover image URL</label><input type="text" id="editMediaCover"/></div>
+      <div class="mf"><label>Thoughts / Review</label><textarea id="editMediaThoughts" style="min-height:80px;resize:vertical;"></textarea></div>
+    </div>
+    <div class="suggestion-actions">
+      <button class="btn-ghost" onclick="closeEditMedia()">Cancel</button>
+      <button class="btn-add" onclick="saveEditMedia()">Save changes</button>
+    </div>
+  </div>
 </div>
 
 <!-- Suggestion overlay -->
@@ -1166,12 +1295,18 @@ function renderNowCards(items,date){
   });
 }
 
+window.openNowPlayingModal=()=>{
+  document.getElementById('nowPlayingOverlay').classList.add('open');
+  document.getElementById('nowConsumingTitle').focus();
+};
+window.closeNowPlayingModal=()=>document.getElementById('nowPlayingOverlay').classList.remove('open');
+window.closeNowPlayingIfBg=(e)=>{if(e.target===document.getElementById('nowPlayingOverlay'))closeNowPlayingModal();};
+
 window.addNowConsuming=async()=>{
   const title=document.getElementById('nowConsumingTitle').value.trim();
   if(!title)return;
   const d=await fsGet(`days/${activeDay()}`,{});
   let existing=Array.isArray(d.nowConsuming)?d.nowConsuming:[];
-  // Filter out any corrupt/old string entries
   existing=existing.filter(i=>i&&typeof i==='object'&&typeof i.title==='string'&&i.title.trim());
   const items=[...existing,{
     title,
@@ -1183,6 +1318,7 @@ window.addNowConsuming=async()=>{
   await fsSet(`days/${activeDay()}`,{nowConsuming:items});
   document.getElementById('nowConsumingTitle').value='';
   document.getElementById('nowConsumingCover').value='';
+  closeNowPlayingModal();
   renderNowCards(items,activeDay());
 };
 
@@ -1266,7 +1402,9 @@ function renderMedia(){
       :`<div class="media-cover">${coverEmoji(item.type)}</div>`;
     const statusLabel=item.status==='completed'?'Completed':item.status==='in-progress'?'In progress':'Want to';
     const dateAdded=item.addedAt?new Date(item.addedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
-    card.innerHTML=`${coverHtml}<div class="media-card-body"><div class="media-card-title">${item.title}</div><div class="media-card-meta">${[item.creator,item.year].filter(Boolean).join(' · ')}</div><span class="media-card-status status-${item.status}">${statusLabel}</span>${item.rating>0?`<div class="media-card-rating">${item.rating}/10</div>`:''} ${item.thoughts?`<div class="media-card-thoughts">${item.thoughts}</div>`:''}</div><button class="media-del-btn" onclick="deleteMedia(${realIdx})">×</button>`;
+    card.innerHTML=`${coverHtml}<div class="media-card-body"><div class="media-card-title">${item.title}</div><div class="media-card-meta">${[item.creator,item.year].filter(Boolean).join(' · ')}</div><span class="media-card-status status-${item.status}">${statusLabel}</span>${item.rating>0?`<div class="media-card-rating">${item.rating}/10</div>`:''} ${item.thoughts?`<div class="media-card-thoughts">${item.thoughts}</div>`:''}</div><div style="position:absolute;top:4px;right:4px;display:flex;gap:3px;opacity:0;transition:opacity 0.15s;" class="media-card-actions"><button style="background:rgba(0,0,0,0.55);border:none;color:white;cursor:pointer;font-size:11px;border-radius:3px;padding:2px 6px;font-family:var(--sans);" onclick="openEditMedia(${realIdx})">Edit</button><button class="media-del-btn" style="position:static;opacity:1;" onclick="deleteMedia(${realIdx})">×</button></div>`;
+    card.addEventListener('mouseenter',()=>card.querySelector('.media-card-actions').style.opacity='1');
+    card.addEventListener('mouseleave',()=>card.querySelector('.media-card-actions').style.opacity='0');
     grid.appendChild(card);
   });
 }
@@ -1337,6 +1475,46 @@ window.addMedia=async()=>{
 window.deleteMedia=async(i)=>{
   if(!confirm('Remove this entry?'))return;
   mediaItems.splice(i,1);await saveMediaItems();updateYearFilter();renderMedia();renderMediaLog();
+};
+
+// ── EDIT MEDIA MODAL ─────────────────────────────────────────────────────
+window.openEditMedia=(i)=>{
+  const item=mediaItems[i];if(!item)return;
+  document.getElementById('editMediaIdx').value=i;
+  document.getElementById('editMediaTitle').value=item.title||'';
+  document.getElementById('editMediaType').value=item.type||'books';
+  document.getElementById('editMediaCreator').value=item.creator||'';
+  document.getElementById('editMediaYear').value=item.year||'';
+  document.getElementById('editMediaStatus').value=item.status||'completed';
+  document.getElementById('editMediaRating').value=item.rating||'';
+  document.getElementById('editMediaCover').value=item.cover||'';
+  document.getElementById('editMediaThoughts').value=item.thoughts||'';
+  document.getElementById('editMediaOverlay').classList.add('open');
+};
+window.closeEditMedia=()=>document.getElementById('editMediaOverlay').classList.remove('open');
+window.closeEditMediaIfBg=(e)=>{if(e.target===document.getElementById('editMediaOverlay'))closeEditMedia();};
+window.saveEditMedia=async()=>{
+  const i=parseInt(document.getElementById('editMediaIdx').value);
+  if(isNaN(i)||!mediaItems[i])return;
+  const newType=document.getElementById('editMediaType').value;
+  mediaItems[i]={
+    ...mediaItems[i],
+    title:document.getElementById('editMediaTitle').value.trim(),
+    type:newType,
+    creator:document.getElementById('editMediaCreator').value.trim(),
+    year:parseInt(document.getElementById('editMediaYear').value)||mediaItems[i].year,
+    status:document.getElementById('editMediaStatus').value,
+    rating:parseFloat(document.getElementById('editMediaRating').value)||0,
+    cover:document.getElementById('editMediaCover').value.trim(),
+    thoughts:document.getElementById('editMediaThoughts').value.trim(),
+  };
+  await saveMediaItems();
+  closeEditMedia();
+  // Switch to the type's tab so the edited item is visible
+  currentMediaTab=newType;
+  const tabs=['books','movies','tv','games'];
+  document.querySelectorAll('.media-tab').forEach((t,ti)=>t.classList.toggle('active',tabs[ti]===newType));
+  updateYearFilter();renderMedia();renderMediaLog();
 };
 
 // ── SUGGESTION BOX ────────────────────────────────────────────────────────
