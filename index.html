@@ -291,77 +291,98 @@ body{font-family:var(--theme-font,var(--sans));background:var(--bg);color:var(--
 
 /* ━━ MEDIA PAGE ━━ */
 #mediaPage{display:none;}
-.media-layout{display:grid;grid-template-columns:240px 1fr;gap:20px;align-items:start;}
-.media-sidebar{display:flex;flex-direction:column;gap:12px;}
-.media-log-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;max-height:520px;overflow-y:auto;}
-.media-log-title{font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
-.media-log-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start;}
-.media-log-item:last-child{border-bottom:none;}
-.media-log-cover{width:32px;height:44px;border-radius:4px;object-fit:cover;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;overflow:hidden;}
-.media-log-cover img{width:100%;height:100%;object-fit:cover;}
-.media-log-info{flex:1;min-width:0;}
-.media-log-name{font-size:12px;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.media-log-meta{font-size:10px;color:var(--text3);}
-.media-log-rating{font-size:10px;color:#E0A800;}
-.media-tabs-row{display:flex;gap:3px;background:var(--bg2);border-radius:var(--radius);padding:3px;width:fit-content;margin-bottom:16px;}
+.media-top-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+.media-tabs-row{display:flex;gap:3px;background:var(--bg2);border-radius:var(--radius);padding:3px;width:fit-content;}
 .media-tab{padding:6px 16px;font-size:13px;font-family:var(--sans);border:none;border-radius:var(--radius-sm);cursor:pointer;background:transparent;color:var(--text2);transition:all 0.15s;}
 .media-tab.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
-.now-consuming-card{background:var(--accent-light);border:1px solid var(--accent);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;}
-.now-consuming-label{font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
-.now-consuming-text{font-size:14px;color:var(--text);font-style:italic;}
-.now-consuming-input{display:flex;gap:6px;margin-top:8px;}
-.now-consuming-input input{flex:1;padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none;}
-.media-add-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;}
-.media-add-bar h4{font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;}
-.media-fields{display:flex;flex-direction:column;gap:8px;}
-.media-field-row{display:flex;gap:8px;flex-wrap:wrap;}
+.media-filter-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.media-filter-row select,.media-filter-row input{padding:5px 9px;font-size:12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none;}
+.media-filter-row input{width:130px;}
+
+/* Three column layout */
+.media-3col{display:grid;grid-template-columns:200px 1fr 280px;gap:20px;align-items:start;}
+.media-section-label{font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;}
+
+/* LEFT: completed log */
+.media-col-left{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 14px;max-height:85vh;overflow-y:auto;position:sticky;top:20px;}
+.media-log-item{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);align-items:flex-start;}
+.media-log-item:last-child{border-bottom:none;}
+.media-log-thumb{width:36px;height:50px;border-radius:4px;background:var(--bg3);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.media-log-thumb img{width:100%;height:100%;object-fit:cover;}
+.media-log-info{flex:1;min-width:0;}
+.media-log-name{font-size:12px;color:var(--text);font-weight:500;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.media-log-meta{font-size:10px;color:var(--text3);margin-top:2px;}
+.media-log-rating{font-size:11px;color:var(--accent);font-weight:500;margin-top:2px;}
+.media-log-type{font-size:9px;padding:1px 5px;border-radius:3px;background:var(--bg2);color:var(--text3);display:inline-block;margin-top:2px;}
+
+/* MIDDLE: now consuming */
+.media-col-mid{}
+.now-cards-grid{display:flex;flex-direction:column;gap:12px;margin-bottom:14px;}
+.now-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0;overflow:hidden;display:flex;gap:0;position:relative;}
+.now-card-cover{width:80px;flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:32px;min-height:110px;}
+.now-card-cover img{width:100%;height:100%;object-fit:cover;}
+.now-card-body{flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:6px;}
+.now-card-type{font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent);}
+.now-card-title{font-family:var(--header-font,var(--serif));font-size:16px;color:var(--text);line-height:1.3;}
+.now-card-creator{font-size:12px;color:var(--text3);}
+.now-card-del{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--text3);cursor:pointer;font-size:15px;opacity:0;transition:opacity 0.15s;}
+.now-card:hover .now-card-del{opacity:1;}
+.now-card-del:hover{color:var(--red);}
+.now-add-bar{display:flex;flex-direction:column;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;}
+.now-add-bar input,.now-add-bar select{padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none;width:100%;}
+.now-add-bar input:focus,.now-add-bar select:focus{border-color:var(--border2);}
+.now-journal-area{width:100%;min-height:120px;resize:vertical;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;font-family:var(--header-font,var(--serif));font-size:14px;line-height:1.7;color:var(--text);background:var(--bg2);outline:none;margin-bottom:6px;}
+.now-journal-area:focus{border-color:var(--border2);}
+.now-empty{font-size:13px;color:var(--text3);font-style:italic;padding:16px 0;}
+
+/* RIGHT: library */
+.media-col-right{}
+.media-stats-row{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.media-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;text-align:center;flex:1;min-width:60px;}
+.media-stat-num{font-family:var(--header-font,var(--serif));font-size:20px;color:var(--text);}
+.media-stat-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;}
+.rating-chart-toggle{font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:var(--sans);text-decoration:underline;padding:0;margin-bottom:6px;}
+.rating-chart{background:var(--bg2);border-radius:var(--radius-sm);padding:10px 12px;display:none;margin-bottom:10px;}
+.rating-chart.open{display:block;}
+.rating-bar-row{display:flex;align-items:center;gap:7px;margin-bottom:4px;font-size:11px;color:var(--text2);}
+.rating-bar-label{width:28px;text-align:right;flex-shrink:0;}
+.rating-bar-track{flex:1;height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;}
+.rating-bar-fill{height:100%;border-radius:4px;background:var(--accent);transition:width 0.4s;}
+.rating-bar-count{width:18px;flex-shrink:0;color:var(--text3);}
+
+/* Add form */
+.media-add-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;display:flex;flex-direction:column;gap:8px;}
+.media-add-title{font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px;}
 .mf{display:flex;flex-direction:column;gap:4px;}
 .mf label{font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);}
-.mf input,.mf select,.mf textarea{padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none;}
+.mf input,.mf select,.mf textarea{padding:7px 10px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none;width:100%;}
 .mf input:focus,.mf select:focus,.mf textarea:focus{border-color:var(--border2);}
-.mf.grow{flex:1;min-width:120px;}
-.media-stats-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
-.media-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;text-align:center;flex:1;min-width:70px;}
-.media-stat-num{font-family:var(--header-font,var(--serif));font-size:22px;color:var(--text);}
-.media-stat-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;}
-.media-filter-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
-.media-filter-row select,.media-filter-row input{padding:5px 10px;font-size:12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);outline:none;}
-.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px;}
-.media-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;position:relative;transition:border-color 0.15s;}
-.media-card:hover{border-color:var(--border2);}
-.media-cover{width:100%;height:220px;object-fit:cover;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:48px;color:var(--text3);}
+
+/* Library grid — Letterboxd-style tall cards */
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;}
+.media-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;position:relative;transition:all 0.15s;cursor:default;}
+.media-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.08);}
+.media-cover{width:100%;aspect-ratio:2/3;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:32px;overflow:hidden;}
 .media-cover img{width:100%;height:100%;object-fit:cover;}
-.media-card-body{padding:10px 12px;}
-.media-card-title{font-family:var(--header-font,var(--serif));font-size:14px;color:var(--text);margin-bottom:2px;line-height:1.3;}
-.media-card-meta{font-size:11px;color:var(--text3);margin-bottom:6px;}
-.media-card-status{display:inline-block;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:500;margin-bottom:6px;}
+.media-card-body{padding:8px;}
+.media-card-title{font-size:12px;font-weight:500;color:var(--text);line-height:1.3;margin-bottom:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.media-card-meta{font-size:10px;color:var(--text3);margin-bottom:4px;}
+.media-card-rating{font-size:11px;color:var(--accent);font-weight:500;}
+.media-card-status{display:inline-block;padding:2px 6px;border-radius:3px;font-size:9px;font-weight:500;margin-top:3px;}
 .status-completed{background:var(--accent-light);color:var(--accent);}
 .status-in-progress{background:#FFF3E0;color:#B06000;}
 [data-theme="dark"] .status-in-progress,[data-theme="midnight"] .status-in-progress,[data-theme="retro"] .status-in-progress,[data-theme="cyberpunk"] .status-in-progress,[data-theme="aurora"] .status-in-progress{background:#2A1500;color:#FFA040;}
 .status-want-to{background:var(--bg2);color:var(--text2);}
-.media-card-rating{font-size:12px;color:var(--text2);margin-bottom:4px;}
-.media-card-rating span{color:#E0A800;font-size:13px;}
-.media-card-thoughts{font-size:11px;color:var(--text2);font-style:italic;line-height:1.4;margin-top:4px;border-top:1px solid var(--border);padding-top:6px;}
-.media-card-date{font-size:10px;color:var(--text3);margin-top:4px;}
-.media-del-btn{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.5);border:none;color:white;cursor:pointer;font-size:14px;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s;}
+.media-card-thoughts{font-size:10px;color:var(--text2);font-style:italic;line-height:1.4;margin-top:4px;padding-top:4px;border-top:1px solid var(--border);}
+.media-del-btn{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.55);border:none;color:white;cursor:pointer;font-size:13px;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s;padding:0;}
 .media-card:hover .media-del-btn{opacity:1;}
-.media-empty{text-align:center;padding:40px 20px;color:var(--text3);font-style:italic;font-size:14px;grid-column:1/-1;}
-/* Rating chart */
-.rating-chart-toggle{font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:var(--sans);text-decoration:underline;padding:0;}
-.rating-chart{margin:12px 0;background:var(--bg2);border-radius:var(--radius-sm);padding:12px 14px;display:none;}
-.rating-chart.open{display:block;}
-.rating-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px;color:var(--text2);}
-.rating-bar-label{width:30px;text-align:right;flex-shrink:0;}
-.rating-bar-track{flex:1;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;}
-.rating-bar-fill{height:100%;border-radius:4px;background:var(--accent);transition:width 0.4s;}
-.rating-bar-count{width:20px;flex-shrink:0;color:var(--text3);}
+.media-empty{text-align:center;padding:32px 16px;color:var(--text3);font-style:italic;font-size:13px;grid-column:1/-1;}
 
-@media(max-width:800px){
-  .shell{padding:18px 14px 50px;}
-  .main-grid{grid-template-columns:1fr;}
-  .media-layout{grid-template-columns:1fr;}
-  .media-sidebar{order:2;}
-  .media-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
+@media(max-width:900px){
+  .media-3col{grid-template-columns:1fr;}
+  .media-col-left{position:static;max-height:300px;order:3;}
+  .media-col-mid{order:1;}
+  .media-col-right{order:2;}
 }
 </style>
 </head>
@@ -558,90 +579,97 @@ body{font-family:var(--theme-font,var(--sans));background:var(--bg);color:var(--
 
   <!-- ══ MEDIA PAGE ══ -->
   <div id="mediaPage">
-    <div class="media-layout">
-      <!-- Main content -->
-      <div>
-        <!-- Now consuming -->
-        <div class="now-consuming-card">
-          <div class="now-consuming-label">Now playing / watching / reading</div>
-          <div class="now-consuming-text" id="nowConsumingText">Nothing set for today.</div>
-          <div class="now-consuming-input">
-            <input type="text" id="nowConsumingInput" placeholder="e.g. The Hobbit, Elden Ring…"/>
-            <button class="btn-ghost" onclick="saveNowConsuming()">Set</button>
-          </div>
-        </div>
 
-        <!-- Tabs -->
-        <div class="media-tabs-row">
-          <button class="media-tab active" onclick="switchMediaTab('books')">📚 Books</button>
-          <button class="media-tab" onclick="switchMediaTab('movies')">🎬 Movies</button>
-          <button class="media-tab" onclick="switchMediaTab('tv')">📺 TV</button>
-          <button class="media-tab" onclick="switchMediaTab('games')">🎮 Games</button>
-        </div>
+    <!-- Top: tabs + filters bar -->
+    <div class="media-top-bar">
+      <div class="media-tabs-row">
+        <button class="media-tab active" onclick="switchMediaTab('books')">📚 Books</button>
+        <button class="media-tab" onclick="switchMediaTab('movies')">🎬 Movies</button>
+        <button class="media-tab" onclick="switchMediaTab('tv')">📺 TV</button>
+        <button class="media-tab" onclick="switchMediaTab('games')">🎮 Games</button>
+      </div>
+      <div class="media-filter-row">
+        <select id="mediaYearFilter" onchange="renderMedia()"><option value="all">All years</option></select>
+        <select id="mediaStatusFilter" onchange="renderMedia()">
+          <option value="all">All</option>
+          <option value="completed">Completed</option>
+          <option value="in-progress">In progress</option>
+          <option value="want-to">Want to</option>
+        </select>
+        <input type="text" id="mediaSearch" placeholder="Search…" oninput="renderMedia()"/>
+      </div>
+    </div>
 
+    <!-- Three-column layout -->
+    <div class="media-3col">
+
+      <!-- LEFT: Completed this year log -->
+      <div class="media-col-left">
+        <div class="media-section-label">Completed this year</div>
+        <div id="mediaLog"></div>
+      </div>
+
+      <!-- MIDDLE: Now consuming -->
+      <div class="media-col-mid">
+        <div class="media-section-label">Now playing / watching / reading</div>
+        <div id="nowConsumingCards"></div>
+        <!-- Add now-consuming item -->
+        <div class="now-add-bar">
+          <input type="text" id="nowConsumingTitle" placeholder="Title…"/>
+          <select id="nowConsumingType">
+            <option value="books">📚 Book</option>
+            <option value="movies">🎬 Movie</option>
+            <option value="tv">📺 TV</option>
+            <option value="games">🎮 Game</option>
+          </select>
+          <input type="text" id="nowConsumingCover" placeholder="Cover URL (optional)"/>
+          <button class="btn-add" onclick="addNowConsuming()">Add</button>
+        </div>
+        <!-- Daily journal for now-consuming -->
+        <div class="now-journal-section" id="nowJournalSection" style="display:none;">
+          <div class="media-section-label" style="margin-top:16px;" id="nowJournalLabel">Daily thoughts</div>
+          <textarea class="now-journal-area" id="nowJournalText" placeholder="Write your thoughts on what you're consuming today…"></textarea>
+          <div class="sync-status"><span class="sync-dot" id="nowJournalDot"></span><span id="nowJournalStatus">—</span></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Library + add form -->
+      <div class="media-col-right">
         <!-- Stats -->
         <div class="media-stats-row" id="mediaStats"></div>
-
-        <!-- Rating chart -->
+        <!-- Rating chart toggle -->
         <div style="margin-bottom:10px;">
-          <button class="rating-chart-toggle" onclick="toggleRatingChart()">Show rating distribution</button>
+          <button class="rating-chart-toggle" onclick="toggleRatingChart()">Show rating chart</button>
           <div class="rating-chart" id="ratingChart"></div>
         </div>
-
-        <!-- Filters -->
-        <div class="media-filter-row">
-          <label style="font-size:12px;color:var(--text2);">Year:</label>
-          <select id="mediaYearFilter" onchange="renderMedia()"><option value="all">All</option></select>
-          <label style="font-size:12px;color:var(--text2);">Status:</label>
-          <select id="mediaStatusFilter" onchange="renderMedia()">
-            <option value="all">All</option>
-            <option value="completed">Completed</option>
-            <option value="in-progress">In progress</option>
-            <option value="want-to">Want to</option>
-          </select>
-          <input type="text" id="mediaSearch" placeholder="Search…" oninput="renderMedia()" style="flex:1;"/>
-        </div>
-
         <!-- Add form -->
         <div class="media-add-bar">
-          <h4>Add entry</h4>
-          <div class="media-fields">
-            <div class="media-field-row">
-              <div class="mf grow"><label>Title</label><input type="text" id="mediaTitle" placeholder="Title…"/></div>
-              <div class="mf grow"><label>Creator</label><input type="text" id="mediaCreator" placeholder="Author / Director / Studio…"/></div>
+          <div class="media-add-title">Add to library</div>
+          <div class="mf" style="width:100%;"><label>Title</label><input type="text" id="mediaTitle" placeholder="Title…"/></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div class="mf" style="flex:1;min-width:120px;"><label>Creator</label><input type="text" id="mediaCreator" placeholder="Author / Director…"/></div>
+            <div class="mf" style="width:72px;"><label>Year</label><input type="number" id="mediaYear" placeholder="2024"/></div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div class="mf" style="flex:1;"><label>Status</label>
+              <select id="mediaStatus">
+                <option value="completed">Completed</option>
+                <option value="in-progress">In progress</option>
+                <option value="want-to">Want to</option>
+              </select>
             </div>
-            <div class="media-field-row">
-              <div class="mf"><label>Year</label><input type="number" id="mediaYear" placeholder="2024" style="width:76px;"/></div>
-              <div class="mf"><label>Status</label>
-                <select id="mediaStatus">
-                  <option value="completed">Completed</option>
-                  <option value="in-progress">In progress</option>
-                  <option value="want-to">Want to</option>
-                </select>
-              </div>
-              <div class="mf"><label>Rating /10</label><input type="number" id="mediaRating" min="0" max="10" step="0.5" placeholder="0–10" style="width:72px;"/></div>
-              <div class="mf grow"><label>Cover image URL</label><input type="text" id="mediaCover" placeholder="https://…"/></div>
-            </div>
-            <div class="media-field-row">
-              <div class="mf grow"><label>Thoughts / Review</label><input type="text" id="mediaThoughts" placeholder="Notes, review, thoughts…"/></div>
-            </div>
-            <div style="display:flex;justify-content:flex-end;margin-top:4px;">
-              <button class="btn-add" onclick="addMedia()">Add entry</button>
-            </div>
+            <div class="mf" style="width:76px;"><label>Rating /10</label><input type="number" id="mediaRating" min="0" max="10" step="0.5" placeholder="—"/></div>
+          </div>
+          <div class="mf" style="width:100%;"><label>Cover image URL</label><input type="text" id="mediaCover" placeholder="https://…"/></div>
+          <div class="mf" style="width:100%;"><label>Thoughts / Review</label><textarea id="mediaThoughts" placeholder="Your review…" style="min-height:60px;resize:vertical;"></textarea></div>
+          <div style="display:flex;justify-content:flex-end;">
+            <button class="btn-add" onclick="addMedia()">Add to library</button>
           </div>
         </div>
-
-        <!-- Grid -->
+        <!-- Library grid -->
         <div class="media-grid" id="mediaGrid"></div>
       </div>
 
-      <!-- Sidebar: running log -->
-      <div class="media-sidebar">
-        <div class="media-log-card">
-          <div class="media-log-title">Completed this year</div>
-          <div id="mediaLog"></div>
-        </div>
-      </div>
     </div>
   </div><!-- /mediaPage -->
 
@@ -757,7 +785,7 @@ window.showPage=(page)=>{
   document.getElementById('lifePage').style.display=page==='life'?'block':'none';
   document.getElementById('mediaPage').style.display=page==='media'?'block':'none';
   document.querySelectorAll('.nav-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&page==='life')||(i===1&&page==='media')));
-  if(page==='media'){renderMedia();renderMediaLog();}
+  if(page==='media'){renderMedia();renderMediaLog();loadNowConsuming(activeDay());}
 };
 
 // ── CLOCK ─────────────────────────────────────────────────────────────────
@@ -906,9 +934,8 @@ async function loadDayData(date){
   await renderTodos(date);
   // Food
   renderFood(data.food||[]);
-  // Now consuming
-  document.getElementById('nowConsumingText').textContent=data.nowConsuming||'Nothing set for today.';
-  document.getElementById('nowConsumingInput').value=data.nowConsuming||'';
+  // Now consuming (load separately, handles its own rendering)
+  await loadNowConsuming(date);
   // update banner label
   if(date===todayKey()){
     document.getElementById('calToggleText').textContent=calOpen?'Calendar':'Calendar — tap to expand';
@@ -1077,12 +1104,67 @@ window.addLink=async()=>{
 window.removeLink=async(e,i)=>{e.stopPropagation();links.splice(i,1);await fsSet('settings/links',{items:links});renderLinks();};
 document.getElementById('linkUrl').addEventListener('keydown',e=>{if(e.key==='Enter')window.addLink();});
 
-// ── NOW CONSUMING ─────────────────────────────────────────────────────────
-window.saveNowConsuming=async()=>{
-  const val=document.getElementById('nowConsumingInput').value.trim();
-  await fsSet(`days/${activeDay()}`,{nowConsuming:val});
-  document.getElementById('nowConsumingText').textContent=val||'Nothing set for today.';
+// ── NOW CONSUMING (multi-item, per-day, categorised) ──────────────────────
+let nowSaveTimer;
+async function loadNowConsuming(date){
+  const data=await fsGet(`days/${date}`,{});
+  renderNowCards(data.nowConsuming||[]);
+  // Show journal if there are now-items
+  const hasItems=(data.nowConsuming||[]).length>0;
+  document.getElementById('nowJournalSection').style.display=hasItems?'block':'none';
+  document.getElementById('nowJournalText').value=data.nowJournal||'';
+  setSyncStatus('nowJournalDot','nowJournalStatus','synced',hasItems?'Synced':'—');
+}
+function renderNowCards(items){
+  const container=document.getElementById('nowConsumingCards');
+  if(!items||!items.length){
+    container.innerHTML='<div class="now-empty">Nothing added yet — add something below.</div>';
+    document.getElementById('nowJournalSection').style.display='none';
+    return;
+  }
+  container.innerHTML='';
+  items.forEach((item,i)=>{
+    const typeLabel={'books':'📚 Book','movies':'🎬 Movie','tv':'📺 TV','games':'🎮 Game'}[item.type]||item.type;
+    const card=document.createElement('div');card.className='now-card';
+    const coverHtml=item.cover
+      ?`<div class="now-card-cover"><img src="${item.cover}" alt="" onerror="this.style.display='none'"/></div>`
+      :`<div class="now-card-cover">${coverEmoji(item.type)}</div>`;
+    card.innerHTML=`${coverHtml}<div class="now-card-body"><div class="now-card-type">${typeLabel}</div><div class="now-card-title">${item.title}</div>${item.creator?`<div class="now-card-creator">${item.creator}</div>`:''}</div><button class="now-card-del" onclick="removeNowItem(${i})">×</button>`;
+    container.appendChild(card);
+  });
+  document.getElementById('nowJournalSection').style.display='block';
+}
+window.addNowConsuming=async()=>{
+  const title=document.getElementById('nowConsumingTitle').value.trim();
+  if(!title)return;
+  const data=await fsGet(`days/${activeDay()}`,{});
+  const items=[...(data.nowConsuming||[]),{
+    title,
+    type:document.getElementById('nowConsumingType').value,
+    cover:document.getElementById('nowConsumingCover').value.trim(),
+    creator:''
+  }];
+  await fsSet(`days/${activeDay()}`,{nowConsuming:items});
+  document.getElementById('nowConsumingTitle').value='';
+  document.getElementById('nowConsumingCover').value='';
+  renderNowCards(items);
+  document.getElementById('nowJournalSection').style.display='block';
 };
+window.removeNowItem=async(i)=>{
+  const data=await fsGet(`days/${activeDay()}`,{});
+  const items=[...(data.nowConsuming||[])];items.splice(i,1);
+  await fsSet(`days/${activeDay()}`,{nowConsuming:items});
+  renderNowCards(items);
+  if(!items.length)document.getElementById('nowJournalSection').style.display='none';
+};
+document.getElementById('nowJournalText').addEventListener('input',()=>{
+  setSyncStatus('nowJournalDot','nowJournalStatus','syncing','Saving…');
+  clearTimeout(nowSaveTimer);
+  nowSaveTimer=setTimeout(async()=>{
+    await fsSet(`days/${activeDay()}`,{nowJournal:document.getElementById('nowJournalText').value});
+    setSyncStatus('nowJournalDot','nowJournalStatus','synced','Saved');
+  },1000);
+});
 
 // ── MEDIA ─────────────────────────────────────────────────────────────────
 async function loadMediaItems(){
@@ -1096,6 +1178,7 @@ window.switchMediaTab=(tab)=>{
   const tabs=['books','movies','tv','games'];
   document.querySelectorAll('.media-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===tab));
   renderMedia();renderMediaLog();
+  loadNowConsuming(activeDay());
 };
 
 function updateYearFilter(){
@@ -1150,9 +1233,8 @@ function renderMedia(){
       ?`<div class="media-cover"><img src="${item.cover}" alt="" onerror="this.parentElement.innerHTML='${coverEmoji(item.type)}'"/></div>`
       :`<div class="media-cover">${coverEmoji(item.type)}</div>`;
     const statusLabel=item.status==='completed'?'Completed':item.status==='in-progress'?'In progress':'Want to';
-    const ratingNum=item.rating>0?`<div class="media-card-rating">${item.rating}/10</div>`:'';
     const dateAdded=item.addedAt?new Date(item.addedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
-    card.innerHTML=`${coverHtml}<div class="media-card-body"><div class="media-card-title">${item.title}</div><div class="media-card-meta">${[item.creator,item.year].filter(Boolean).join(' · ')}</div><span class="media-card-status status-${item.status}">${statusLabel}</span>${ratingNum}${item.thoughts?`<div class="media-card-thoughts">${item.thoughts}</div>`:''}<div class="media-card-date">${dateAdded}</div></div><button class="media-del-btn" onclick="deleteMedia(${realIdx})">×</button>`;
+    card.innerHTML=`${coverHtml}<div class="media-card-body"><div class="media-card-title">${item.title}</div><div class="media-card-meta">${[item.creator,item.year].filter(Boolean).join(' · ')}</div><span class="media-card-status status-${item.status}">${statusLabel}</span>${item.rating>0?`<div class="media-card-rating">${item.rating}/10</div>`:''} ${item.thoughts?`<div class="media-card-thoughts">${item.thoughts}</div>`:''}</div><button class="media-del-btn" onclick="deleteMedia(${realIdx})">×</button>`;
     grid.appendChild(card);
   });
 }
@@ -1181,14 +1263,19 @@ window.toggleRatingChart=()=>{
 function renderMediaLog(){
   const log=document.getElementById('mediaLog');
   const year=new Date().getFullYear();
-  const completed=mediaItems.filter(i=>i.status==='completed'&&i.type===currentMediaTab&&i.year===year);
-  if(!completed.length){log.innerHTML='<div style="font-size:12px;color:var(--text3);font-style:italic;">Nothing completed yet this year.</div>';return;}
-  log.innerHTML=completed.slice().reverse().map(item=>{
+  // Show ALL types completed this year, most recent first
+  const completed=mediaItems.filter(i=>i.status==='completed'&&Number(i.year)===year);
+  if(!completed.length){
+    log.innerHTML='<div style="font-size:12px;color:var(--text3);font-style:italic;padding:4px 0;">Nothing completed yet this year.</div>';
+    return;
+  }
+  log.innerHTML=completed.slice().sort((a,b)=>(b.addedAt||0)-(a.addedAt||0)).map(item=>{
     const dateAdded=item.addedAt?new Date(item.addedAt).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
     const coverHtml=item.cover
-      ?`<div class="media-log-cover"><img src="${item.cover}" alt=""/></div>`
-      :`<div class="media-log-cover">${coverEmoji(item.type)}</div>`;
-    return `<div class="media-log-item">${coverHtml}<div class="media-log-info"><div class="media-log-name">${item.title}</div><div class="media-log-meta">${item.creator||''} ${dateAdded?'· '+dateAdded:''}</div>${item.rating>0?`<div class="media-log-rating">${item.rating}/10</div>`:''}</div></div>`;
+      ?`<div class="media-log-thumb"><img src="${item.cover}" alt="" onerror="this.parentElement.innerHTML='${coverEmoji(item.type)}'"/></div>`
+      :`<div class="media-log-thumb">${coverEmoji(item.type)}</div>`;
+    const typeLabels={books:'Book',movies:'Movie',tv:'TV',games:'Game'};
+    return `<div class="media-log-item">${coverHtml}<div class="media-log-info"><div class="media-log-name">${item.title}</div><div class="media-log-meta">${dateAdded}</div>${item.rating>0?`<div class="media-log-rating">${item.rating}/10</div>`:''}<span class="media-log-type">${typeLabels[item.type]||item.type}</span></div></div>`;
   }).join('');
 }
 
